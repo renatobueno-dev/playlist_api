@@ -1,0 +1,16 @@
+# Common VCS and editor files
+.DS_Store
+.git/
+.gitignore
+.idea/
+.vscode/
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local environment
+.env
+.venv/
