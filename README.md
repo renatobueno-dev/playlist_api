@@ -14,9 +14,13 @@ See [DOMAIN_SCOPE.md](./DOMAIN_SCOPE.md) for detailed fields and relationship de
 
 ```text
 .
+├── .dockerignore
+├── .env.example
 ├── .gitignore
+├── Dockerfile
 ├── DOMAIN_SCOPE.md
 ├── README.md
+├── docker-compose.yml
 ├── requirements.txt
 └── app
     ├── __init__.py
@@ -48,7 +52,10 @@ See [DOMAIN_SCOPE.md](./DOMAIN_SCOPE.md) for detailed fields and relationship de
 | Path | Responsibility |
 | --- | --- |
 | `DOMAIN_SCOPE.md` | Defines the domain model and relationship decisions for `Song` and `Playlist`. |
-| `requirements.txt` | Lists runtime dependencies (`fastapi`, `uvicorn`, `sqlalchemy`). |
+| `requirements.txt` | Lists runtime dependencies (`fastapi`, `uvicorn`, `sqlalchemy`, `psycopg`). |
+| `Dockerfile` | Defines the container runtime for the API service. |
+| `docker-compose.yml` | Orchestrates API + PostgreSQL services for local multi-container runs. |
+| `.env.example` | Documents environment variables for Compose configuration. |
 | `app/main.py` | API entry point, application creation, router registration, and startup table creation. |
 | `app/database.py` | SQLAlchemy engine/session setup and FastAPI dependency provider (`get_session`). |
 | `app/models/base.py` | Shared SQLAlchemy declarative base class. |
@@ -92,6 +99,43 @@ uvicorn app.main:app --reload
 
 - Swagger UI: `http://127.0.0.1:8000/docs`
 - ReDoc: `http://127.0.0.1:8000/redoc`
+
+## Stage 2 containerization
+
+### Step A - Frozen startup contract
+
+- FastAPI entrypoint: `app.main:app`
+- Dependencies file: `requirements.txt`
+- Service port: `8000`
+- Runtime command: `uvicorn app.main:app --host 0.0.0.0 --port 8000`
+
+### Build and run with Docker
+
+```bash
+docker build -t music-platform-api:latest .
+docker run --rm -p 8000:8000 music-platform-api:latest
+```
+
+### Run API + DB with Docker Compose
+
+1. Copy `.env.example` to `.env` and adjust values if needed.
+2. Start stack:
+
+```bash
+docker compose up --build
+```
+
+3. Stop stack:
+
+```bash
+docker compose down
+```
+
+4. Stop stack and remove DB volume:
+
+```bash
+docker compose down -v
+```
 
 ## Implemented endpoints (current)
 
