@@ -1,4 +1,4 @@
-# Etapa 1 - Domain Scope
+# Stage 1 - Domain Scope
 
 ## Resource: Song
 

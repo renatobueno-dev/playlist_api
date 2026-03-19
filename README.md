@@ -1,4 +1,4 @@
-# Checkpoint Nivel 3 - Etapa 1
+# Checkpoint Level 3 - Stage 1
 
 Minimal FastAPI + SQLAlchemy structure for a music platform domain.
 
