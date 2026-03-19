@@ -107,10 +107,26 @@ uvicorn app.main:app --reload
 - `GET /playlists/{playlist_id}`
 - `PATCH /playlists/{playlist_id}`
 - `DELETE /playlists/{playlist_id}`
+- `POST /playlists/{playlist_id}/songs/{song_id}`
+- `DELETE /playlists/{playlist_id}/songs/{song_id}`
 
 ## CRUD planning reference
 
 Initial planning notes are documented in [CRUD_ENDPOINT_PLAN.md](./CRUD_ENDPOINT_PLAN.md).
+
+## Relationship behavior (validated)
+
+- Playlist creation accepts an optional `song_ids` list in `PlaylistCreate`.
+- Playlist update accepts optional `song_ids` in `PlaylistUpdate`:
+  - if provided, playlist-song links are replaced by the provided list
+  - if omitted, links remain unchanged
+- Songs can also be linked/unlinked later using:
+  - `POST /playlists/{playlist_id}/songs/{song_id}`
+  - `DELETE /playlists/{playlist_id}/songs/{song_id}`
+- Playlist responses embed songs (`PlaylistRead.songs`).
+- Referencing nonexistent songs in `song_ids` returns `404`.
+- Linking/unlinking with nonexistent playlist/song IDs returns `404`.
+- Unlinking a song that is not linked to the playlist returns `404`.
 
 ## Current database note
 

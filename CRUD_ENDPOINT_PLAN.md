@@ -33,3 +33,10 @@ This document defines the complete CRUD route map before implementing the missin
 3. Repeat the same for playlists in `playlist_service.py` and `routes/playlists.py`.
 4. Re-run manual API checks in `/docs`.
 5. Add tests (next stage) for success and `404` cases.
+
+## Relationship endpoints (Step 6 extension)
+
+| Operation | Method | Path | Success Status | Error Status |
+| --- | --- | --- | --- | --- |
+| Add song to playlist | `POST` | `/playlists/{playlist_id}/songs/{song_id}` | `200` | `404` |
+| Remove song from playlist | `DELETE` | `/playlists/{playlist_id}/songs/{song_id}` | `200` | `404` |
