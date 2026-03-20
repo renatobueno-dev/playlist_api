@@ -23,18 +23,25 @@ Validation job:
 - Install Python dependencies.
 - Compile Python modules (`python -m compileall app`).
 - Build Docker image (validation build).
-- Install Helm CLI.
+- Install Helm and Terraform CLIs.
 - Run `helm lint`.
 - Render chart with `helm template`.
+- Run Terraform checks:
+  - `terraform fmt -check`
+  - `terraform init -backend=false`
+  - `terraform validate`
 
 Deploy job:
 
 - Build and push API image to GHCR:
   - `ghcr.io/<owner>/music-platform-api:<sha>`
   - `ghcr.io/<owner>/music-platform-api:latest`
-- Install `kubectl` and Helm CLIs.
+- Install `kubectl`, Helm, and Terraform CLIs.
 - Configure kubeconfig from repository secret `KUBE_CONFIG_DATA` (base64 kubeconfig).
-- Ensure namespace exists and has `istio-injection=enabled`.
+- Apply Terraform foundation:
+  - `terraform init`
+  - optional `terraform import` for pre-existing namespace
+  - `terraform apply` for namespace baseline and labels
 - Run `helm upgrade --install` with image repo/tag override.
 - Apply Istio manifests:
   - `k8s/istio/traffic-management.yaml`
@@ -58,7 +65,7 @@ Deploy secret guard:
    - Namespace and resources allowed by cluster RBAC.
 4. Action runtime compatibility:
    - Workflow sets `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true`.
-   - Python and Helm setup is handled by CLI steps to reduce dependency on deprecated Node.js 20 actions.
+   - Helm/Terraform setup is handled by CLI steps to reduce dependency on deprecated Node.js 20 actions.
 
 ## Success and failure signals in logs
 
@@ -77,5 +84,6 @@ Failure indicators:
   - Deploy skipped notice: `Skipping deploy because KUBE_CONFIG_DATA is not configured.`
 - Image push failures from GHCR auth/permissions.
 - Helm upgrade failures (template, chart, or kube access issues).
+- Terraform failures (provider init/import/apply errors).
 - Rollout timeout failures from unhealthy pods.
 - Istio manifest apply errors (CRD missing, validation failure, RBAC).

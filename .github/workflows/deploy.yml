@@ -35,11 +35,28 @@ jobs:
       - name: Install Helm CLI
         run: curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
+      - name: Install Terraform CLI
+        run: |
+          TERRAFORM_VERSION="$(curl -fsSL https://checkpoint-api.hashicorp.com/v1/check/terraform | python3 -c 'import json,sys; print(json.load(sys.stdin)["current_version"])')"
+          curl -fsSLo terraform.zip "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
+          unzip -o terraform.zip
+          sudo install -m 0755 terraform /usr/local/bin/terraform
+          rm -f terraform terraform.zip
+
       - name: Helm lint
         run: helm lint helm/music-platform
 
       - name: Helm template render
         run: helm template music-platform helm/music-platform >/tmp/rendered.yaml
+
+      - name: Terraform fmt check
+        run: terraform -chdir=terraform fmt -check
+
+      - name: Terraform init (validate mode)
+        run: terraform -chdir=terraform init -backend=false
+
+      - name: Terraform validate
+        run: terraform -chdir=terraform validate
 
   deploy:
     name: Build Push And Deploy
@@ -87,7 +104,7 @@ jobs:
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
             ${{ env.IMAGE_NAME }}:latest
 
-      - name: Install kubectl and Helm CLIs
+      - name: Install kubectl, Helm and Terraform CLIs
         if: steps.precheck.outputs.ready == 'true'
         run: |
           KUBECTL_VERSION="$(curl -fsSL https://dl.k8s.io/release/stable.txt)"
@@ -95,6 +112,11 @@ jobs:
           sudo install -m 0755 kubectl /usr/local/bin/kubectl
           rm kubectl
           curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          TERRAFORM_VERSION="$(curl -fsSL https://checkpoint-api.hashicorp.com/v1/check/terraform | python3 -c 'import json,sys; print(json.load(sys.stdin)["current_version"])')"
+          curl -fsSLo terraform.zip "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
+          unzip -o terraform.zip
+          sudo install -m 0755 terraform /usr/local/bin/terraform
+          rm -f terraform terraform.zip
 
       - name: Configure kubeconfig
         if: steps.precheck.outputs.ready == 'true'
@@ -104,11 +126,23 @@ jobs:
           mkdir -p "${HOME}/.kube"
           echo "${KUBE_CONFIG_DATA}" | base64 -d > "${HOME}/.kube/config"
 
-      - name: Prepare namespace for Istio sidecar injection
+      - name: Terraform init
+        if: steps.precheck.outputs.ready == 'true'
+        run: terraform -chdir=terraform init
+
+      - name: Terraform import existing namespace (if present)
         if: steps.precheck.outputs.ready == 'true'
         run: |
-          kubectl create namespace "${NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
-          kubectl label namespace "${NAMESPACE}" istio-injection=enabled --overwrite
+          if kubectl get namespace "${NAMESPACE}" >/dev/null 2>&1; then
+            terraform -chdir=terraform import -input=false kubernetes_namespace_v1.music_platform "${NAMESPACE}" || true
+          fi
+
+      - name: Terraform apply foundation
+        if: steps.precheck.outputs.ready == 'true'
+        run: |
+          terraform -chdir=terraform apply -auto-approve -input=false \
+            -var="kubeconfig_path=${HOME}/.kube/config" \
+            -var="namespace_name=${NAMESPACE}"
 
       - name: Deploy Helm release
         if: steps.precheck.outputs.ready == 'true'
