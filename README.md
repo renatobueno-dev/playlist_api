@@ -30,6 +30,7 @@ See [DOMAIN_SCOPE.md](./DOMAIN_SCOPE.md) for detailed fields and relationship de
 ├── STAGE_4_ISTIO_READINESS_GUIDE.md
 ├── STAGE_4_ISTIO_SECURITY_GUIDE.md
 ├── STAGE_4_TERRAFORM_HELM_BOUNDARY_GUIDE.md
+├── STAGE_4_TERRAFORM_MIN_SCOPE_GUIDE.md
 ├── STAGE_4_TERRAFORM_SCOPE_GUIDE.md
 ├── STAGE_4_ISTIO_TRAFFIC_GUIDE.md
 ├── docker-compose.yml
@@ -77,6 +78,7 @@ See [DOMAIN_SCOPE.md](./DOMAIN_SCOPE.md) for detailed fields and relationship de
 | `STAGE_4_ISTIO_READINESS_GUIDE.md` | Stage 4 Phase 1 Istio readiness checklist and validation flow. |
 | `STAGE_4_ISTIO_SECURITY_GUIDE.md` | Stage 4 Phase 3 security policy model and Istio protection rules. |
 | `STAGE_4_TERRAFORM_HELM_BOUNDARY_GUIDE.md` | Stage 4 Phase 5 Step 2 separation contract between Terraform and Helm ownership. |
+| `STAGE_4_TERRAFORM_MIN_SCOPE_GUIDE.md` | Stage 4 Phase 5 Step 3 smallest valid Terraform scope definition for this project. |
 | `STAGE_4_TERRAFORM_SCOPE_GUIDE.md` | Stage 4 Phase 5 Step 1 Terraform ownership boundary and responsibility scope. |
 | `STAGE_4_ISTIO_TRAFFIC_GUIDE.md` | Stage 4 Phase 2 traffic entry path and Istio routing setup. |
 | `helm/music-platform` | Helm chart containing metadata, configurable values, and Kubernetes templates. |
@@ -158,6 +160,9 @@ Phase 5 Terraform scope definition (Step 1):
 
 Phase 5 Terraform vs Helm separation (Step 2):
 - [STAGE_4_TERRAFORM_HELM_BOUNDARY_GUIDE.md](./STAGE_4_TERRAFORM_HELM_BOUNDARY_GUIDE.md)
+
+Phase 5 minimum valid Terraform scope (Step 3):
+- [STAGE_4_TERRAFORM_MIN_SCOPE_GUIDE.md](./STAGE_4_TERRAFORM_MIN_SCOPE_GUIDE.md)
 
 ## Implemented endpoints (current)
 
