@@ -18,6 +18,7 @@ spec:
         {{- include "music-platform.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: db
     spec:
+      serviceAccountName: {{ include "music-platform.dbServiceAccountName" . }}
       {{- if not .Values.db.persistence.enabled }}
       volumes:
         - name: data

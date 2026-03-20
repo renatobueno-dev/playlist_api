@@ -1,0 +1,49 @@
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: music-platform-strict-mtls
+  namespace: music-platform
+spec:
+  mtls:
+    mode: STRICT
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: api-allow-trusted-sources
+  namespace: music-platform
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: api
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces:
+              - istio-system
+              - music-platform
+      to:
+        - operation:
+            ports:
+              - "8000"
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: db-allow-api-only
+  namespace: music-platform
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: db
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - cluster.local/ns/music-platform/sa/music-platform-api-sa
+      to:
+        - operation:
+            ports:
+              - "5432"

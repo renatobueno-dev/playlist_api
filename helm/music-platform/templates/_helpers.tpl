@@ -66,3 +66,11 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- define "music-platform.dbServiceName" -}}
 {{- include "music-platform.dbName" . -}}
 {{- end -}}
+
+{{- define "music-platform.apiServiceAccountName" -}}
+{{- printf "%s-api-sa" (include "music-platform.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "music-platform.dbServiceAccountName" -}}
+{{- printf "%s-db-sa" (include "music-platform.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}

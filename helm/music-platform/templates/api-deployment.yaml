@@ -17,6 +17,7 @@ spec:
         {{- include "music-platform.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: api
     spec:
+      serviceAccountName: {{ include "music-platform.apiServiceAccountName" . }}
       containers:
         - name: api
           image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
