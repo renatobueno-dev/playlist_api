@@ -45,7 +45,7 @@ Deploy secret guard:
 
 - Deploy job runs a precheck step.
 - If `KUBE_CONFIG_DATA` is missing, deploy steps are skipped and the workflow reports:
-  - `::warning::Skipping deploy because KUBE_CONFIG_DATA is not configured.`
+  - `::notice::Skipping deploy because KUBE_CONFIG_DATA is not configured.`
 
 ## Required GitHub configuration
 
@@ -74,7 +74,7 @@ Success indicators:
 Failure indicators:
 
 - Missing secret:
-  - Deploy skipped warning: `Skipping deploy because KUBE_CONFIG_DATA is not configured.`
+  - Deploy skipped notice: `Skipping deploy because KUBE_CONFIG_DATA is not configured.`
 - Image push failures from GHCR auth/permissions.
 - Helm upgrade failures (template, chart, or kube access issues).
 - Rollout timeout failures from unhealthy pods.

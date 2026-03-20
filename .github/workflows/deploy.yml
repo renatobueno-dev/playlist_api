@@ -60,7 +60,7 @@ jobs:
         run: |
           if [ -z "${KUBE_CONFIG_DATA}" ]; then
             echo "ready=false" >> "${GITHUB_OUTPUT}"
-            echo "::warning::Skipping deploy because KUBE_CONFIG_DATA is not configured."
+            echo "::notice::Skipping deploy because KUBE_CONFIG_DATA is not configured."
           else
             echo "ready=true" >> "${GITHUB_OUTPUT}"
           fi
