@@ -45,11 +45,12 @@ jobs:
 
       - name: Install Terraform CLI
         run: |
-          curl --retry 5 --retry-all-errors --retry-delay 2 -fsSLo terraform.zip \
+          TF_TMP_DIR="$(mktemp -d)"
+          curl --retry 5 --retry-all-errors --retry-delay 2 -fsSLo "${TF_TMP_DIR}/terraform.zip" \
             "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
-          unzip -o terraform.zip
-          sudo install -m 0755 terraform /usr/local/bin/terraform
-          rm -f terraform terraform.zip
+          unzip -o "${TF_TMP_DIR}/terraform.zip" -d "${TF_TMP_DIR}"
+          sudo install -m 0755 "${TF_TMP_DIR}/terraform" /usr/local/bin/terraform
+          rm -rf "${TF_TMP_DIR}"
 
       - name: Helm lint
         run: helm lint helm/music-platform
@@ -124,11 +125,12 @@ jobs:
           tar -xzf helm.tar.gz
           sudo install -m 0755 linux-amd64/helm /usr/local/bin/helm
           rm -rf helm.tar.gz linux-amd64
-          curl --retry 5 --retry-all-errors --retry-delay 2 -fsSLo terraform.zip \
+          TF_TMP_DIR="$(mktemp -d)"
+          curl --retry 5 --retry-all-errors --retry-delay 2 -fsSLo "${TF_TMP_DIR}/terraform.zip" \
             "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
-          unzip -o terraform.zip
-          sudo install -m 0755 terraform /usr/local/bin/terraform
-          rm -f terraform terraform.zip
+          unzip -o "${TF_TMP_DIR}/terraform.zip" -d "${TF_TMP_DIR}"
+          sudo install -m 0755 "${TF_TMP_DIR}/terraform" /usr/local/bin/terraform
+          rm -rf "${TF_TMP_DIR}"
 
       - name: Configure kubeconfig
         if: steps.precheck.outputs.ready == 'true'
