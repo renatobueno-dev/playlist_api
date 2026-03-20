@@ -29,6 +29,7 @@ See [DOMAIN_SCOPE.md](./DOMAIN_SCOPE.md) for detailed fields and relationship de
 ├── STAGE_4_GITHUB_ACTIONS_GUIDE.md
 ├── STAGE_4_ISTIO_READINESS_GUIDE.md
 ├── STAGE_4_ISTIO_SECURITY_GUIDE.md
+├── STAGE_4_TERRAFORM_SCOPE_GUIDE.md
 ├── STAGE_4_ISTIO_TRAFFIC_GUIDE.md
 ├── docker-compose.yml
 ├── helm/
@@ -74,6 +75,7 @@ See [DOMAIN_SCOPE.md](./DOMAIN_SCOPE.md) for detailed fields and relationship de
 | `STAGE_4_GITHUB_ACTIONS_GUIDE.md` | Stage 4 Phase 4 CI/CD automation model with triggers, deploy steps, and logs. |
 | `STAGE_4_ISTIO_READINESS_GUIDE.md` | Stage 4 Phase 1 Istio readiness checklist and validation flow. |
 | `STAGE_4_ISTIO_SECURITY_GUIDE.md` | Stage 4 Phase 3 security policy model and Istio protection rules. |
+| `STAGE_4_TERRAFORM_SCOPE_GUIDE.md` | Stage 4 Phase 5 Step 1 Terraform ownership boundary and responsibility scope. |
 | `STAGE_4_ISTIO_TRAFFIC_GUIDE.md` | Stage 4 Phase 2 traffic entry path and Istio routing setup. |
 | `helm/music-platform` | Helm chart containing metadata, configurable values, and Kubernetes templates. |
 | `app/main.py` | API entry point, application creation, router registration, and startup DB initialization with retry. |
@@ -148,6 +150,9 @@ Phase 3 security policies:
 
 Phase 4 GitHub Actions automation:
 - [STAGE_4_GITHUB_ACTIONS_GUIDE.md](./STAGE_4_GITHUB_ACTIONS_GUIDE.md)
+
+Phase 5 Terraform scope definition (Step 1):
+- [STAGE_4_TERRAFORM_SCOPE_GUIDE.md](./STAGE_4_TERRAFORM_SCOPE_GUIDE.md)
 
 ## Implemented endpoints (current)
 
