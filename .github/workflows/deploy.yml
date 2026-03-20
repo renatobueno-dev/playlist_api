@@ -17,26 +17,29 @@ jobs:
   validate:
     name: Validate Build And Manifests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+      - name: Checkout repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git init .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git -c http.extraheader="AUTHORIZATION: bearer ${GH_TOKEN}" fetch --depth=1 origin "${GITHUB_REF}"
+          git checkout --detach FETCH_HEAD
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: python3 -m pip install -r requirements.txt
 
       - name: Compile Python modules
-        run: python -m compileall app
+        run: python3 -m compileall app
 
       - name: Build Docker image (validation only)
         run: docker build -t music-platform-api:ci .
 
-      - name: Set up Helm
-        uses: azure/setup-helm@v4
+      - name: Install Helm CLI
+        run: curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
       - name: Helm lint
         run: helm lint helm/music-platform
@@ -53,8 +56,14 @@ jobs:
       contents: read
       packages: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git init .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git -c http.extraheader="AUTHORIZATION: bearer ${GH_TOKEN}" fetch --depth=1 origin "${GITHUB_REF}"
+          git checkout --detach FETCH_HEAD
 
       - name: Check deploy prerequisites
         id: precheck
@@ -90,13 +99,14 @@ jobs:
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
             ${{ env.IMAGE_NAME }}:latest
 
-      - name: Set up kubectl
+      - name: Install kubectl and Helm CLIs
         if: steps.precheck.outputs.ready == 'true'
-        uses: azure/setup-kubectl@v4
-
-      - name: Set up Helm
-        if: steps.precheck.outputs.ready == 'true'
-        uses: azure/setup-helm@v4
+        run: |
+          KUBECTL_VERSION="$(curl -fsSL https://dl.k8s.io/release/stable.txt)"
+          curl -fsSLo kubectl "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+          sudo install -m 0755 kubectl /usr/local/bin/kubectl
+          rm kubectl
+          curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
       - name: Configure kubeconfig
         if: steps.precheck.outputs.ready == 'true'

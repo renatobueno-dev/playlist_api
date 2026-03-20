@@ -19,9 +19,11 @@ This phase turns manual deployment steps into a reproducible CI/CD workflow.
 
 Validation job:
 
+- Checkout repository with `git` CLI (no JavaScript checkout action).
 - Install Python dependencies.
 - Compile Python modules (`python -m compileall app`).
 - Build Docker image (validation build).
+- Install Helm CLI.
 - Run `helm lint`.
 - Render chart with `helm template`.
 
@@ -30,6 +32,7 @@ Deploy job:
 - Build and push API image to GHCR:
   - `ghcr.io/<owner>/music-platform-api:<sha>`
   - `ghcr.io/<owner>/music-platform-api:latest`
+- Install `kubectl` and Helm CLIs.
 - Configure kubeconfig from repository secret `KUBE_CONFIG_DATA` (base64 kubeconfig).
 - Ensure namespace exists and has `istio-injection=enabled`.
 - Run `helm upgrade --install` with image repo/tag override.
@@ -54,7 +57,8 @@ Deploy secret guard:
    - Istio installed and healthy.
    - Namespace and resources allowed by cluster RBAC.
 4. Action runtime compatibility:
-   - Workflow sets `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true` to avoid Node.js 20 deprecation warnings.
+   - Workflow sets `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true`.
+   - Checkout/Python/Helm setup is handled by CLI steps to reduce dependency on deprecated Node.js 20 actions.
 
 ## Success and failure signals in logs
 
