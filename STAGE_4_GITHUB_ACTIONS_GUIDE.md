@@ -38,6 +38,10 @@ Deploy job:
   - `k8s/istio/security-policies.yaml`
 - Verify deployment and policy resources using `kubectl rollout status` and `kubectl get`.
 
+Deploy secret guard:
+
+- If `KUBE_CONFIG_DATA` is missing, deploy job is skipped and workflow reports a warning job (`Deploy Skipped (Missing Secret)`).
+
 ## Required GitHub configuration
 
 1. Repository secret:
@@ -47,6 +51,8 @@ Deploy job:
 3. Cluster prerequisites:
    - Istio installed and healthy.
    - Namespace and resources allowed by cluster RBAC.
+4. Action runtime compatibility:
+   - Workflow sets `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true` to avoid Node.js 20 deprecation warnings.
 
 ## Success and failure signals in logs
 
@@ -62,7 +68,7 @@ Success indicators:
 Failure indicators:
 
 - Missing secret:
-  - `::error::Missing required secret KUBE_CONFIG_DATA`
+  - Deploy skipped warning: `Skipping deploy because KUBE_CONFIG_DATA is not configured.`
 - Image push failures from GHCR auth/permissions.
 - Helm upgrade failures (template, chart, or kube access issues).
 - Rollout timeout failures from unhealthy pods.
