@@ -19,7 +19,7 @@ This phase turns manual deployment steps into a reproducible CI/CD workflow.
 
 Validation job:
 
-- Checkout repository with `git` CLI (no JavaScript checkout action).
+- Checkout repository with `actions/checkout@v5`.
 - Install Python dependencies.
 - Compile Python modules (`python -m compileall app`).
 - Build Docker image (validation build).
@@ -58,7 +58,7 @@ Deploy secret guard:
    - Namespace and resources allowed by cluster RBAC.
 4. Action runtime compatibility:
    - Workflow sets `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true`.
-   - Checkout/Python/Helm setup is handled by CLI steps to reduce dependency on deprecated Node.js 20 actions.
+   - Python and Helm setup is handled by CLI steps to reduce dependency on deprecated Node.js 20 actions.
 
 ## Success and failure signals in logs
 
