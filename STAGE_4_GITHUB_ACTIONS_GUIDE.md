@@ -91,3 +91,23 @@ Failure indicators:
 - Terraform failures (provider init/import/apply errors).
 - Rollout timeout failures from unhealthy pods.
 - Istio manifest apply errors (CRD missing, validation failure, RBAC).
+
+## Known CI troubleshooting case
+
+Symptom:
+
+- Terraform install step fails with:
+  - `error: cannot delete old terraform`
+  - `Is a directory`
+  - `Process completed with exit code 50`
+
+Cause:
+
+- The repository contains a `terraform/` directory.
+- Unzipping Terraform binary directly in workspace creates a filename collision with that directory.
+
+Implemented fix in workflow:
+
+- Download Terraform zip into a temporary directory.
+- Unzip into that temporary directory.
+- Install binary from temporary directory to `/usr/local/bin`.
