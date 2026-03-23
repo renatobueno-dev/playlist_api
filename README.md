@@ -1,222 +1,145 @@
-# Checkpoint Level 3 - Stage 1
+# Music Platform API
 
-Minimal FastAPI + SQLAlchemy structure for a music platform domain.
+![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?logo=fastapi&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-Helm-326CE5?logo=kubernetes&logoColor=white)
+![Terraform](https://img.shields.io/badge/Terraform-IaC-7B42BC?logo=terraform&logoColor=white)
+![Istio](https://img.shields.io/badge/Istio-service_mesh-466BB0?logo=istio&logoColor=white)
+![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)
 
-## Scope defined
+## 📚 Purpose
 
-- `Song` resource
-- `Playlist` resource
-- Many-to-many relationship through `playlist_songs`
+Educational project focused on consolidating real backend and deployment practices with FastAPI. Domain: `Song` + `Playlist` with many-to-many through `playlist_songs`, built across 4 progressive infrastructure stages: local → Docker/Compose → Kubernetes/Helm → Istio/Terraform/CI.
 
-See [DOMAIN_SCOPE.md](./DOMAIN_SCOPE.md) for detailed fields and relationship decisions.
+- REST API with a simple but representative domain (songs and playlists)
+- Kubernetes workload management with Helm and Istio service mesh
+- Infrastructure as code with Terraform
+- Automated CI/CD pipeline with GitHub Actions
+
+> 💡 **Want to understand the development process?** See [Development Log](docs/DEVELOPMENT_LOG.md) for decisions, corrections, and reasoning recorded during each stage.
+
+## ⚠️ Security note
+
+This repository is for study. Before using in production:
+- Use strong, real secrets in environment variables — never commit `.env`
+- Set `DATABASE_URL` and all credentials via injected secrets, not hardcoded defaults
+- Restrict CORS origins and rotate all credentials before exposure
+
+---
 
 ## Project structure
 
 ```text
 .
-├── .github/
-│   └── workflows/
-│       └── deploy.yml
-├── .dockerignore
-├── .env.example
-├── .gitignore
+├── .github/workflows/deploy.yml   # CI/CD pipeline
+├── CHANGELOG.md
 ├── Dockerfile
-├── DOMAIN_SCOPE.md
-├── README.md
-├── STAGE_2_DOCKER_GUIDE.md
-├── STAGE_3_HELM_GUIDE.md
-├── STAGE_3_K8S_CONCEPT_MAP.md
-├── STAGE_4_GITHUB_ACTIONS_GUIDE.md
-├── STAGE_4_ISTIO_READINESS_GUIDE.md
-├── STAGE_4_ISTIO_SECURITY_GUIDE.md
-├── STAGE_4_TERRAFORM_FLOW_INTEGRATION_GUIDE.md
-├── STAGE_4_TERRAFORM_HELM_BOUNDARY_GUIDE.md
-├── STAGE_4_TERRAFORM_MIN_SCOPE_GUIDE.md
-├── STAGE_4_TERRAFORM_SCOPE_GUIDE.md
-├── STAGE_4_ISTIO_TRAFFIC_GUIDE.md
 ├── docker-compose.yml
-├── helm/
-├── terraform/
+├── .env.example
 ├── requirements.txt
-└── app
-    ├── __init__.py
-    ├── database.py
-    ├── main.py
-    ├── models
-    │   ├── __init__.py
-    │   ├── base.py
-    │   ├── playlist.py
-    │   ├── playlist_song.py
-    │   └── song.py
-    ├── routes
-    │   ├── __init__.py
-    │   ├── health.py
-    │   ├── playlists.py
-    │   └── songs.py
-    ├── schemas
-    │   ├── __init__.py
-    │   ├── playlist.py
-    │   └── song.py
-    └── services
-        ├── __init__.py
-        ├── playlist_service.py
-        └── song_service.py
+├── app/                           # FastAPI application
+│   ├── main.py
+│   ├── database.py
+│   ├── models/      (song, playlist, playlist_song, base)
+│   ├── schemas/     (song, playlist)
+│   ├── routes/      (health, songs, playlists)
+│   └── services/    (song_service, playlist_service)
+├── helm/music-platform/           # Helm chart
+│   ├── Chart.yaml / values.yaml
+│   └── templates/   (deployment, service, statefulset, configmap, secret, serviceaccounts)
+├── k8s/istio/                     # Istio manifests
+│   ├── traffic-management.yaml
+│   └── security-policies.yaml
+├── terraform/                     # Environment foundation
+│   ├── main.tf / variables.tf / outputs.tf / versions.tf
+├── docs/                          # Reference documentation (by topic)
+│   ├── README.md                  # Navigation index
+│   ├── domain/      (domain-scope, crud-endpoint-plan)
+│   ├── containers/  (docker-guide)
+│   ├── kubernetes/  (k8s-concept-map, helm-guide)
+│   ├── istio/       (readiness, traffic, security)
+│   ├── cicd/        (github-actions)
+│   └── terraform/   (scope, helm-boundary, min-scope, flow-integration)
 ```
 
-### What each part does
+**Request layer flow:** `routes` → `schemas` → `services` → `models` → `database`
 
-| Path | Responsibility |
-| --- | --- |
-| `DOMAIN_SCOPE.md` | Defines the domain model and relationship decisions for `Song` and `Playlist`. |
-| `requirements.txt` | Lists runtime dependencies (`fastapi`, `uvicorn`, `sqlalchemy`, `psycopg`). |
-| `Dockerfile` | Defines the container runtime for the API service. |
-| `docker-compose.yml` | Orchestrates API + PostgreSQL services for local multi-container runs. |
-| `.env.example` | Documents environment variables for Compose configuration. |
-| `.github/workflows/deploy.yml` | GitHub Actions workflow for validation, image build/push, and automated deploy. |
-| `STAGE_2_DOCKER_GUIDE.md` | Step-by-step Stage 2 guide (A to E) with validation and troubleshooting checks. |
-| `STAGE_3_K8S_CONCEPT_MAP.md` | Conceptual translation from Docker/Compose to Kubernetes/Helm resources. |
-| `STAGE_3_HELM_GUIDE.md` | Helm chart structure and install/lint commands for Stage 3 Phase 3. |
-| `STAGE_4_GITHUB_ACTIONS_GUIDE.md` | Stage 4 Phase 4 CI/CD automation model with triggers, deploy steps, and logs. |
-| `STAGE_4_ISTIO_READINESS_GUIDE.md` | Stage 4 Phase 1 Istio readiness checklist and validation flow. |
-| `STAGE_4_ISTIO_SECURITY_GUIDE.md` | Stage 4 Phase 3 security policy model and Istio protection rules. |
-| `STAGE_4_TERRAFORM_FLOW_INTEGRATION_GUIDE.md` | Stage 4 Phase 5 Step 4 integration of Terraform into the existing Helm/Istio/CI flow. |
-| `STAGE_4_TERRAFORM_HELM_BOUNDARY_GUIDE.md` | Stage 4 Phase 5 Step 2 separation contract between Terraform and Helm ownership. |
-| `STAGE_4_TERRAFORM_MIN_SCOPE_GUIDE.md` | Stage 4 Phase 5 Step 3 smallest valid Terraform scope definition for this project. |
-| `STAGE_4_TERRAFORM_SCOPE_GUIDE.md` | Stage 4 Phase 5 Step 1 Terraform ownership boundary and responsibility scope. |
-| `STAGE_4_ISTIO_TRAFFIC_GUIDE.md` | Stage 4 Phase 2 traffic entry path and Istio routing setup. |
-| `helm/music-platform` | Helm chart containing metadata, configurable values, and Kubernetes templates. |
-| `terraform` | Minimal Terraform baseline for environment foundation (namespace and required labels). |
-| `app/main.py` | API entry point, application creation, router registration, and startup DB initialization with retry. |
-| `app/database.py` | SQLAlchemy engine/session setup and FastAPI dependency provider (`get_session`). |
-| `app/models/base.py` | Shared SQLAlchemy declarative base class. |
-| `app/models/song.py` | `Song` ORM model and relationship to playlists. |
-| `app/models/playlist.py` | `Playlist` ORM model and relationship to songs. |
-| `app/models/playlist_song.py` | Association table model for the many-to-many relation and `added_at` metadata. |
-| `app/schemas/song.py` | Pydantic API contracts for songs: `SongCreate`, `SongUpdate`, `SongRead`. |
-| `app/schemas/playlist.py` | Pydantic API contracts for playlists: `PlaylistCreate`, `PlaylistUpdate`, `PlaylistRead`. |
-| `app/routes/health.py` | Healthcheck endpoint for service status. |
-| `app/routes/songs.py` | HTTP endpoints for full song CRUD operations. |
-| `app/routes/playlists.py` | HTTP endpoints for full playlist CRUD operations. |
-| `app/services/song_service.py` | Database operations used by song routes (create/read/update/delete). |
-| `app/services/playlist_service.py` | Database operations used by playlist routes (create/read/update/delete). |
+---
 
-### Layer flow
+## How to run locally
 
-Request flow follows this order:
-
-1. `routes/*` receives and validates HTTP input.
-2. `schemas/*` enforces input/output contracts.
-3. `services/*` executes business/database operations.
-4. `models/*` maps Python objects to database tables.
-5. `database.py` manages sessions used across route handlers.
-
-## Run locally
-
-1. Create and activate a virtual environment.
+1. Create and activate a virtual environment:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # Windows: .\venv\Scripts\activate
+   ```
 2. Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-3. Start the API:
-
-```bash
-uvicorn app.main:app --reload
-```
-
-4. Open docs:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Start the server (uses SQLite by default — no database needed):
+   ```bash
+   uvicorn app.main:app --reload
+   ```
+   To use PostgreSQL instead, set `DATABASE_URL` before starting (see [SETUP_AND_QUALITY.md](docs/SETUP_AND_QUALITY.md)).
 
 - Swagger UI: `http://127.0.0.1:8000/docs`
 - ReDoc: `http://127.0.0.1:8000/redoc`
 
-## Stage 2 containerization
+## How to run with Docker
 
-Detailed execution plan for Stage 2 Steps A to E:
-- [STAGE_2_DOCKER_GUIDE.md](./STAGE_2_DOCKER_GUIDE.md)
+```bash
+cp .env.example .env
+docker compose up --build
+```
 
-## Stage 3 Kubernetes planning
+API: `http://localhost:8000/`
 
-Conceptual translation for Phase 2 (before writing manifests):
-- [STAGE_3_K8S_CONCEPT_MAP.md](./STAGE_3_K8S_CONCEPT_MAP.md)
+---
 
-## Stage 3 Helm chart
+## API endpoints
 
-Phase 3 chart structure and usage:
-- [STAGE_3_HELM_GUIDE.md](./STAGE_3_HELM_GUIDE.md)
+| Method | Path | Description |
+| --- | --- | --- |
+| `GET` | `/` | API status message |
+| `GET` | `/health` | Service healthcheck |
+| `GET/POST` | `/songs/` | List / create songs |
+| `GET/PATCH/DELETE` | `/songs/{id}` | Get / update / delete song |
+| `GET/POST` | `/playlists/` | List / create playlists |
+| `GET/PATCH/DELETE` | `/playlists/{id}` | Get / update / delete playlist |
+| `POST` | `/playlists/{id}/songs/{song_id}` | Link song to playlist |
+| `DELETE` | `/playlists/{id}/songs/{song_id}` | Unlink song from playlist |
 
-## Stage 4 Runtime And Automation
+Playlist `PATCH` accepts optional `song_ids` — if provided, links are replaced; if omitted, unchanged.
+Non-existent IDs return `404`.
 
-Phase 1 readiness checklist:
-- [STAGE_4_ISTIO_READINESS_GUIDE.md](./STAGE_4_ISTIO_READINESS_GUIDE.md)
+---
 
-Phase 2 traffic path and routing setup:
-- [STAGE_4_ISTIO_TRAFFIC_GUIDE.md](./STAGE_4_ISTIO_TRAFFIC_GUIDE.md)
+## Documentation
 
-Phase 3 security policies:
-- [STAGE_4_ISTIO_SECURITY_GUIDE.md](./STAGE_4_ISTIO_SECURITY_GUIDE.md)
+Full reference in [`docs/`](./docs/README.md):
 
-Phase 4 GitHub Actions automation:
-- [STAGE_4_GITHUB_ACTIONS_GUIDE.md](./STAGE_4_GITHUB_ACTIONS_GUIDE.md)
+| Topic | Files |
+| --- | --- |
+| Project-wide | [CHANGELOG.md](./CHANGELOG.md) · [ARCHITECTURE.md](./docs/ARCHITECTURE.md) · [SETUP_AND_QUALITY.md](./docs/SETUP_AND_QUALITY.md) · [DEVELOPMENT_LOG.md](./docs/DEVELOPMENT_LOG.md) |
+| Domain | [domain-scope](./docs/domain/domain-scope.md) · [crud-endpoint-plan](./docs/domain/crud-endpoint-plan.md) |
+| Containers | [docker-guide](./docs/containers/docker-guide.md) |
+| Kubernetes | [k8s-concept-map](./docs/kubernetes/k8s-concept-map.md) · [helm-guide](./docs/kubernetes/helm-guide.md) |
+| Istio | [readiness](./docs/istio/readiness.md) · [traffic](./docs/istio/traffic.md) · [security](./docs/istio/security.md) |
+| CI/CD | [github-actions](./docs/cicd/github-actions.md) |
+| Terraform | [scope](./docs/terraform/scope.md) · [helm-boundary](./docs/terraform/helm-boundary.md) · [min-scope](./docs/terraform/min-scope.md) · [flow-integration](./docs/terraform/flow-integration.md) |
 
-Phase 5 Terraform scope definition (Step 1):
-- [STAGE_4_TERRAFORM_SCOPE_GUIDE.md](./STAGE_4_TERRAFORM_SCOPE_GUIDE.md)
+---
 
-Phase 5 Terraform vs Helm separation (Step 2):
-- [STAGE_4_TERRAFORM_HELM_BOUNDARY_GUIDE.md](./STAGE_4_TERRAFORM_HELM_BOUNDARY_GUIDE.md)
+## Tests
 
-Phase 5 minimum valid Terraform scope (Step 3):
-- [STAGE_4_TERRAFORM_MIN_SCOPE_GUIDE.md](./STAGE_4_TERRAFORM_MIN_SCOPE_GUIDE.md)
+> **Under development.**
 
-Phase 5 integration with existing Stage 4 flow (Step 4):
-- [STAGE_4_TERRAFORM_FLOW_INTEGRATION_GUIDE.md](./STAGE_4_TERRAFORM_FLOW_INTEGRATION_GUIDE.md)
+---
 
-## Implemented endpoints (current)
+## Notes
 
-- `GET /`
-- `GET /health`
-- `GET /songs/`
-- `POST /songs/`
-- `GET /songs/{song_id}`
-- `PATCH /songs/{song_id}`
-- `DELETE /songs/{song_id}`
-- `GET /playlists/`
-- `POST /playlists/`
-- `GET /playlists/{playlist_id}`
-- `PATCH /playlists/{playlist_id}`
-- `DELETE /playlists/{playlist_id}`
-- `POST /playlists/{playlist_id}/songs/{song_id}`
-- `DELETE /playlists/{playlist_id}/songs/{song_id}`
-
-## CRUD planning reference
-
-Initial planning notes are documented in [CRUD_ENDPOINT_PLAN.md](./CRUD_ENDPOINT_PLAN.md).
-
-## Relationship behavior (validated)
-
-- Playlist creation accepts an optional `song_ids` list in `PlaylistCreate`.
-- Playlist update accepts optional `song_ids` in `PlaylistUpdate`:
-  - if provided, playlist-song links are replaced by the provided list
-  - if omitted, links remain unchanged
-- Songs can also be linked/unlinked later using:
-  - `POST /playlists/{playlist_id}/songs/{song_id}`
-  - `DELETE /playlists/{playlist_id}/songs/{song_id}`
-- Playlist responses embed songs (`PlaylistRead.songs`).
-- Referencing nonexistent songs in `song_ids` returns `404`.
-- Linking/unlinking with nonexistent playlist/song IDs returns `404`.
-- Unlinking a song that is not linked to the playlist returns `404`.
-
-## Current database note
-
-This project currently uses `Base.metadata.create_all(...)` (no migration tool yet).
-If you change model columns after creating `music.db`, recreate the database file
-or add migrations (for example with Alembic) in the next stage.
-
-## Startup resilience knobs
-
-For environments where DB startup can be slower than API boot, use:
-
-- `STARTUP_DB_MAX_RETRIES` (default: `20`)
-- `STARTUP_DB_RETRY_SECONDS` (default: `2`)
-
-In Kubernetes, API startup behavior is also controlled by Helm probe values in `helm/music-platform/values.yaml` under `api.probes.startup`.
+- Schema is initialised via `Base.metadata.create_all()`. Alembic migration tracking is under development.
+- DB startup retry is configurable via `STARTUP_DB_MAX_RETRIES` (default `20`) and `STARTUP_DB_RETRY_SECONDS` (default `2`). Kubernetes startup behaviour is also controlled by `api.probes.startup` in `helm/music-platform/values.yaml`.
