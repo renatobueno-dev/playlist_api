@@ -7,4 +7,4 @@ It is intentionally separated from the original stage documentation and does not
 ## Files
 
 - `loose-ends-priority-roadmap.md`: prioritized remediation order, checkpoint lens, and step-by-step execution plan.
-
+- `namespace-single-source-of-truth.md`: Step 1 implementation details for namespace consistency across Terraform, workflow, and Istio apply flow.

@@ -65,6 +65,10 @@ This distinction guides what is checkpoint-priority versus production-polish.
 
 ## Step 1 - Namespace Single Source of Truth
 
+Status:
+
+- Implemented.
+
 Why first:
 
 - It removes drift between Terraform namespace ownership, workflow `NAMESPACE`, and Istio manifest namespaces.
@@ -165,4 +169,3 @@ Recommended immediate chain:
 3. Container/runtime hardening
 
 This sequence gives the best checkpoint value per effort while keeping later improvements simpler and safer.
-
