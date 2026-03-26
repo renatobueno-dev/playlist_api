@@ -33,3 +33,30 @@ spec:
             host: __API_SERVICE_HOST__
             port:
               number: 8000
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: playcatch-api-resilience
+  namespace: __NAMESPACE__
+spec:
+  host: __API_SERVICE_HOST__
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+    loadBalancer:
+      simple: LEAST_REQUEST
+    connectionPool:
+      tcp:
+        maxConnections: 100
+        connectTimeout: 10s
+      http:
+        http1MaxPendingRequests: 100
+        maxRequestsPerConnection: 100
+        maxRetries: 3
+        idleTimeout: 30s
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 10s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
