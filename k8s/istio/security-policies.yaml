@@ -2,7 +2,7 @@ apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
 metadata:
   name: music-platform-strict-mtls
-  namespace: music-platform
+  namespace: __NAMESPACE__
 spec:
   mtls:
     mode: STRICT
@@ -11,7 +11,7 @@ apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: api-allow-trusted-sources
-  namespace: music-platform
+  namespace: __NAMESPACE__
 spec:
   selector:
     matchLabels:
@@ -22,7 +22,7 @@ spec:
         - source:
             namespaces:
               - istio-system
-              - music-platform
+              - __NAMESPACE__
       to:
         - operation:
             ports:
@@ -32,7 +32,7 @@ apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: db-allow-api-only
-  namespace: music-platform
+  namespace: __NAMESPACE__
 spec:
   selector:
     matchLabels:
@@ -42,7 +42,7 @@ spec:
     - from:
         - source:
             principals:
-              - cluster.local/ns/music-platform/sa/music-platform-api-sa
+              - __CLUSTER_DOMAIN__/ns/__NAMESPACE__/sa/__API_SERVICE_ACCOUNT__
       to:
         - operation:
             ports:

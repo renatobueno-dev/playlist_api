@@ -58,6 +58,9 @@ jobs:
       - name: Helm template render
         run: helm template music-platform helm/music-platform >/tmp/rendered.yaml
 
+      - name: Render Istio manifests with workflow namespace
+        run: ./scripts/render-istio-manifests.sh >/tmp/istio-rendered.yaml
+
       - name: Terraform fmt check
         run: terraform -chdir=terraform fmt -check
 
@@ -170,8 +173,7 @@ jobs:
       - name: Apply Istio traffic and security policies
         if: steps.precheck.outputs.ready == 'true'
         run: |
-          kubectl apply -f k8s/istio/traffic-management.yaml
-          kubectl apply -f k8s/istio/security-policies.yaml
+          ./scripts/render-istio-manifests.sh | kubectl apply -n "${NAMESPACE}" -f -
 
       - name: Verify rollout and security resources
         if: steps.precheck.outputs.ready == 'true'
