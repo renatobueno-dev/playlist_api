@@ -21,3 +21,15 @@ variable "namespace_annotations" {
   description = "Optional custom annotations for the managed namespace."
   default     = {}
 }
+
+variable "pod_security_level" {
+  type        = string
+  description = "Pod Security Standards level applied to namespace labels."
+  default     = "baseline"
+}
+
+variable "pod_security_version" {
+  type        = string
+  description = "Pod Security Standards version for namespace labels."
+  default     = "latest"
+}

@@ -4,7 +4,13 @@ provider "kubernetes" {
 
 locals {
   required_namespace_labels = {
-    "istio-injection" = "enabled"
+    "istio-injection"                            = "enabled"
+    "pod-security.kubernetes.io/enforce"         = var.pod_security_level
+    "pod-security.kubernetes.io/warn"            = var.pod_security_level
+    "pod-security.kubernetes.io/audit"           = var.pod_security_level
+    "pod-security.kubernetes.io/enforce-version" = var.pod_security_version
+    "pod-security.kubernetes.io/warn-version"    = var.pod_security_version
+    "pod-security.kubernetes.io/audit-version"   = var.pod_security_version
   }
 
   effective_namespace_labels = merge(
