@@ -13,3 +13,4 @@ It is intentionally separated from the original stage documentation and does not
 - `pipeline-reproducibility-hardening.md`: Step 4 implementation details for CI reproducibility and dependency/image pinning.
 - `terraform-kubernetes-posture-hardening.md`: Step 5 implementation details for Terraform baseline posture and namespace security labels.
 - `istio-destinationrule-resilience.md`: Step 6 implementation details for Istio DestinationRule resilience policy.
+- `post-step-followups.md`: remaining small follow-up fixes completed after Steps 1-6.

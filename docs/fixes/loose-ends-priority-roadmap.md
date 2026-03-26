@@ -165,6 +165,17 @@ Goal:
 
 - Move from "Istio present and secure" to "Istio secure and more resilient."
 
+## Post-Step Follow-ups
+
+Status:
+
+- Implemented.
+
+Scope:
+
+- Terraform provider constraint refined to patch-level (`~> 2.38.0`).
+- Startup DB retry environment variables documented in `.env.example`.
+
 ## Recommended Execution Sequence
 
 Do now:
