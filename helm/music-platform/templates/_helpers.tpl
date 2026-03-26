@@ -60,7 +60,11 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{- define "music-platform.secretName" -}}
+{{- if .Values.db.existingSecret -}}
+{{- .Values.db.existingSecret | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
 {{- printf "%s-secret" (include "music-platform.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
 {{- end -}}
 
 {{- define "music-platform.dbServiceName" -}}

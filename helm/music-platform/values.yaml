@@ -5,7 +5,7 @@ api:
   replicaCount: 1
   image:
     repository: music-platform-api
-    tag: "latest"
+    tag: "0.1.0"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
@@ -38,7 +38,8 @@ db:
     port: 5432
   name: music_platform
   user: postgres
-  password: postgres
+  password: ""
+  existingSecret: ""
   persistence:
     enabled: true
     size: 1Gi
