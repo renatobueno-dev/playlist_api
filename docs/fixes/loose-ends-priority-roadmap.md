@@ -80,6 +80,10 @@ Goal:
 
 ## Step 2 - Security Defaults Hardening
 
+Status:
+
+- Implemented.
+
 Why second:
 
 - Weak defaults are highly visible in review and directly affect security posture.
