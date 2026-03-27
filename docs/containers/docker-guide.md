@@ -1,15 +1,19 @@
 # Docker Workflow
 
+> Steps A–C: building and validating the API image in isolation. For multi-service orchestration with Docker Compose (Steps D–E), see [compose-guide.md](./compose-guide.md).
+
+---
+
 Focuses on portability and reproducibility.
 The target is not only "it works on my machine", but "it works the same way in containers."
 
-## Prerequisites
+## 🛠️ Prerequisites
 
 - Docker Desktop (or Docker Engine + Compose) installed and running.
 - Project root as current directory:
   - `.../13_checkpoint_nivel_3`
 
-## Step A - Freeze startup logic
+## 🅰️ Step A - Freeze startup logic
 
 Use these values as the source of truth for container runtime:
 
@@ -23,7 +27,7 @@ Use these values as the source of truth for container runtime:
 Checkpoint:
 - All Docker/Compose files must respect these same values.
 
-## Step B - Create Dockerfile (API only)
+## 🅱️ Step B - Create Dockerfile (API only)
 
 Goal:
 - Build an API image that can run independently.
@@ -50,7 +54,7 @@ Checkpoint:
 - Container starts without crashing.
 - API and docs are reachable through mapped host port.
 
-## Step C - Test container alone
+## 🔵 Step C - Test container alone
 
 Goal:
 - Validate runtime behavior before introducing dependent services.
@@ -72,79 +76,15 @@ Checkpoint:
 - Restart count remains `0`.
 - Logs show normal startup and no traceback.
 
-## Step D - Add Docker Compose (API + DB)
+---
 
-Goal:
-- Run API and database as separate services managed together.
+Continue with [compose-guide.md](./compose-guide.md) for Step D (adding the database service with Docker Compose) and Step E (log validation).
 
-Compose must include:
-- `api` service (FastAPI container).
-- `db` service (PostgreSQL container).
-- `DATABASE_URL` pointing from `api` to `db` service name.
-- Service dependency/health strategy (`depends_on` + DB healthcheck).
+---
 
-Commands:
+## 🔗 Related documents
 
-```bash
-docker compose up -d --build
-docker compose ps
-```
-
-Validation:
-
-```bash
-curl http://127.0.0.1:8000/health
-curl -X POST http://127.0.0.1:8000/songs/ \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Compose Song","artist":"Compose Tester"}'
-curl http://127.0.0.1:8000/songs/
-docker compose exec -T db psql -U postgres -d music_platform -c "SELECT COUNT(*) FROM songs;"
-```
-
-Checkpoint:
-- Both services are running.
-- API can read/write data with DB.
-- Host-to-API mapping (`localhost:8000 -> api:8000`) works.
-
-## Step E - Validate logs
-
-Goal:
-- Confirm there are no hidden startup, import, or DB connection errors.
-
-Commands:
-
-```bash
-docker compose logs --tail=200 api
-docker compose logs --tail=200 db
-```
-
-Expected API signals:
-- `Started server process`
-- `Waiting for application startup`
-- `Application startup complete`
-- `Uvicorn running on http://0.0.0.0:8000`
-
-Expected DB signals:
-- `database system is ready to accept connections`
-- `listening on ... port 5432`
-
-Red flags:
-- `Traceback`
-- `ModuleNotFoundError`
-- `ImportError`
-- `OperationalError`
-- `connection refused`
-- `could not connect`
-
-Checkpoint:
-- Startup and readiness logs are clean.
-- No unresolved runtime or connectivity errors.
-
-## Cleanup commands
-
-```bash
-docker compose down
-docker compose down -v
-```
-
-Use `-v` to remove persisted DB volume and restart from a clean state.
+- [Docker Compose workflow](./compose-guide.md)
+- [Kubernetes concept map](../kubernetes/k8s-concept-map.md)
+- [Setup guide](../SETUP.md)
+- [Architecture decisions](../ARCHITECTURE.md)

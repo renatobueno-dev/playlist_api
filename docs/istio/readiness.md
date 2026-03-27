@@ -1,8 +1,12 @@
 # Istio Readiness
 
+> Pre-flight checklist confirming the cluster is ready for Istio traffic and security resources. Run through these steps before applying mesh manifests.
+
+---
+
 Confirms the cluster is ready to apply Istio traffic and security behaviour.
 
-## Objective
+## 🎯 Objective
 
 Validate the minimum prerequisites:
 
@@ -12,7 +16,7 @@ Validate the minimum prerequisites:
 4. Application pods run with Istio sidecars.
 5. Istio custom resources can be applied.
 
-## Commands used
+## 💻 Commands used
 
 Cluster and context:
 
@@ -64,7 +68,7 @@ EOF
 kubectl delete virtualservice readiness-check -n music-platform
 ```
 
-## Readiness outcome
+## ✅ Readiness outcome
 
 Phase 1 is considered complete when all checks pass:
 
@@ -73,7 +77,15 @@ Phase 1 is considered complete when all checks pass:
 - API and DB pods include `istio-proxy` (`2/2 Running`).
 - Istio networking resources can be created successfully.
 
-## Notes
+## 📝 Notes
 
 - On this machine, Minikube warns that Istio prefers more resources (8GB RAM and 4 CPUs).
 - Even with that warning, Phase 1 reached healthy status and traffic resources were accepted.
+
+---
+
+## 🔗 Related documents
+
+- [Istio traffic management](./traffic.md)
+- [Istio security](./security.md)
+- [Setup guide](../SETUP.md)

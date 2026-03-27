@@ -1,12 +1,16 @@
 # GitHub Actions
 
+> Documents the CI/CD workflow: triggers, validation steps, build/push pipeline, and deploy sequence. Covers required secrets and known troubleshooting cases.
+
+---
+
 Automates validation, build/push, and deployment into a reproducible CI/CD workflow.
 
-## Workflow file
+## 📄 Workflow file
 
 - `.github/workflows/deploy.yml`
 
-## When automation runs
+## ⏰ When automation runs
 
 1. `pull_request`:
    - Runs validation only.
@@ -15,7 +19,7 @@ Automates validation, build/push, and deployment into a reproducible CI/CD workf
 3. `workflow_dispatch`:
    - Allows manual deployment run from GitHub UI.
 
-## What it checks/builds/deploys
+## 🔧 What it checks/builds/deploys
 
 Validation job:
 
@@ -56,10 +60,23 @@ Deploy secret guard:
 - If `KUBE_CONFIG_DATA` is missing, deploy steps are skipped and the workflow reports:
   - `::notice::Skipping deploy because KUBE_CONFIG_DATA is not configured.`
 
-## Required GitHub configuration
+## 🔐 Required GitHub configuration
 
 1. Repository secret:
    - `KUBE_CONFIG_DATA`: base64-encoded kubeconfig with cluster access.
+
+   **Format:** standard `kubeconfig` file encoded as a single base64 string. The deploy job decodes it at runtime:
+   ```bash
+   echo "${KUBE_CONFIG_DATA}" | base64 -d > "${HOME}/.kube/config"
+   ```
+   **How to generate it** (from a machine with cluster access):
+   ```bash
+   base64 < ~/.kube/config | tr -d '\n'
+   ```
+   Copy the output and add it as a repository secret at:
+   `Settings → Secrets and variables → Actions → New repository secret`
+
+   If the secret is absent, deploy steps are skipped with a notice — see "Deploy secret guard" above.
 2. Workflow permissions:
    - `packages: write` for pushing to GHCR.
 3. Cluster prerequisites:
@@ -71,7 +88,7 @@ Deploy secret guard:
 5. Tooling stability:
    - Workflow pins CLI versions (`kubectl`, `helm`, `terraform`) and uses retry flags for download commands.
 
-## Success and failure signals in logs
+## 📊 Success and failure signals in logs
 
 Success indicators:
 
@@ -92,7 +109,7 @@ Failure indicators:
 - Rollout timeout failures from unhealthy pods.
 - Istio manifest apply errors (CRD missing, validation failure, RBAC).
 
-## Known CI troubleshooting case
+## 🐛 Known CI troubleshooting case
 
 Symptom:
 
@@ -111,3 +128,11 @@ Implemented fix in workflow:
 - Download Terraform zip into a temporary directory.
 - Unzip into that temporary directory.
 - Install binary from temporary directory to `/usr/local/bin`.
+
+---
+
+## 🔗 Related documents
+
+- [Terraform integration flow](../terraform/flow-integration.md)
+- [Quality guide](../QUALITY.md)
+- [Architecture decisions](../ARCHITECTURE.md)

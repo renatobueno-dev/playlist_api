@@ -1,8 +1,12 @@
 # Istio Security
 
+> Defines mTLS enforcement and access control policies for the `music-platform` namespace. Maps precisely which sources can reach the API and DB workloads.
+
+---
+
 Defines mTLS enforcement and access control policies after traffic routing is established.
 
-## Security model
+## 🔐 Security model
 
 Trusted traffic:
 
@@ -16,11 +20,11 @@ Restricted traffic:
 - Any source other than API service account trying to access DB `5432`.
 - Any source outside trusted namespaces trying to access API `8000`.
 
-## Implemented resources
+## 📜 Implemented resources
 
-Manifest file:
+Manifest file: `k8s/istio/security-policies.yaml`
 
-- `k8s/istio/security-policies.yaml`
+> ⚠️ This manifest uses `__NAMESPACE__`, `__API_SERVICE_ACCOUNT__`, and `__CLUSTER_DOMAIN__` placeholders — it is never applied directly. Use `scripts/render-istio-manifests.sh` to interpolate environment values before applying. In CI/CD the workflow step `Apply Istio traffic and security policies` runs this automatically. For local apply: `./scripts/render-istio-manifests.sh | kubectl apply -n music-platform -f -`
 
 Resources:
 
@@ -31,7 +35,7 @@ Resources:
 3. `AuthorizationPolicy/db-allow-api-only`
    - Allows DB access only from principal `cluster.local/ns/music-platform/sa/music-platform-api-sa` on port `5432`.
 
-## Identity hardening in Helm
+## 💪 Identity hardening in Helm
 
 To support identity-based policy, dedicated service accounts are used:
 
@@ -45,7 +49,7 @@ Helm templates updated:
 - `helm/music-platform/templates/db-statefulset.yaml`
 - `helm/music-platform/templates/_helpers.tpl`
 
-## Apply and verify
+## ✅ Apply and verify
 
 ```bash
 helm upgrade --install music-platform helm/music-platform --namespace music-platform --create-namespace
@@ -61,3 +65,11 @@ Optional checks:
   - `kubectl get pod -n music-platform <pod-name> -o jsonpath='{.spec.serviceAccountName}'`
 - Confirm API still reachable via ingress host:
   - `curl -H "Host: playcatch.local" http://127.0.0.1:18080/health`
+
+---
+
+## 🔗 Related documents
+
+- [Istio traffic management](./traffic.md)
+- [Istio readiness](./readiness.md)
+- [Helm guide](../kubernetes/helm-guide.md)

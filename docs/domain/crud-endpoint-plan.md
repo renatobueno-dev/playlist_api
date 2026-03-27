@@ -1,8 +1,12 @@
 # CRUD Endpoint Plan
 
+> CRUD route planning artifact for the Song and Playlist resources. For the stable API reference guide, see [api.md](../api.md).
+
+---
+
 This document defines the complete CRUD route map before implementing the missing endpoints.
 
-## Resource: Song
+## 🎵 Resource: Song
 
 | Operation | Method | Path | Request Schema | Response Schema | Success Status | Error Status |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -12,21 +16,21 @@ This document defines the complete CRUD route map before implementing the missin
 | Update song | `PATCH` | `/songs/{song_id}` | `SongUpdate` | `SongRead` | `200` | `404`, `422` |
 | Delete song | `DELETE` | `/songs/{song_id}` | - | - | `204` | `404` |
 
-## Resource: Playlist
+## 📋 Resource: Playlist
 
 | Operation | Method | Path | Request Schema | Response Schema | Success Status | Error Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| Create playlist | `POST` | `/playlists/` | `PlaylistCreate` | `PlaylistRead` | `201` | `404, 422` |
+| Create playlist | `POST` | `/playlists/` | `PlaylistCreate` | `PlaylistRead` | `201` | `404`, `422` |
 | List playlists | `GET` | `/playlists/` | - | `list[PlaylistRead]` | `200` | - |
 | Get playlist by id | `GET` | `/playlists/{playlist_id}` | - | `PlaylistRead` | `200` | `404` |
 | Update playlist | `PATCH` | `/playlists/{playlist_id}` | `PlaylistUpdate` | `PlaylistRead` | `200` | `404`, `422` |
 | Delete playlist | `DELETE` | `/playlists/{playlist_id}` | - | - | `204` | `404` |
 
-## Why `PATCH` for updates
+## ❓ Why `PATCH` for updates
 
 `SongUpdate` and `PlaylistUpdate` are partial-update schemas (all fields optional), so `PATCH` matches the contract better than `PUT`.
 
-## Implementation order
+## 🔢 Implementation order
 
 1. Add service functions for `get_by_id`, `update`, and `delete` in `song_service.py`.
 2. Add the new song routes in `routes/songs.py`.
@@ -34,9 +38,19 @@ This document defines the complete CRUD route map before implementing the missin
 4. Re-run manual API checks in `/docs`.
 5. Add tests (next stage) for success and `404` cases.
 
-## Relationship endpoints (Step 6 extension)
+## 🔗 Relationship endpoints (Step 6 extension)
 
-| Operation | Method | Path | Success Status | Error Status |
-| --- | --- | --- | --- | --- |
-| Add song to playlist | `POST` | `/playlists/{playlist_id}/songs/{song_id}` | `200` | `404` |
-| Remove song from playlist | `DELETE` | `/playlists/{playlist_id}/songs/{song_id}` | `200` (returns updated `PlaylistRead`) | `404` |
+| Operation | Method | Path | Response Schema | Success Status | Error Status |
+| --- | --- | --- | --- | --- | --- |
+| Add song to playlist | `POST` | `/playlists/{playlist_id}/songs/{song_id}` | `PlaylistRead` | `200` | `404` |
+| Remove song from playlist | `DELETE` | `/playlists/{playlist_id}/songs/{song_id}` | `PlaylistRead` | `200` | `404` |
+
+Both endpoints return the full updated `PlaylistRead` object — including the complete `songs` list after the operation. This means the caller always sees the resulting playlist state without needing a separate `GET` request.
+
+---
+
+## 🔗 Related documents
+
+- [API reference](../api.md)
+- [Domain scope](./domain-scope.md)
+- [Architecture decisions](../ARCHITECTURE.md)
