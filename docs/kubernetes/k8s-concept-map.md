@@ -1,8 +1,12 @@
 # Kubernetes Concept Map
 
+> Translates every Docker/Compose concept to its Kubernetes equivalent before writing any YAML. Reference this before reading Helm templates or cluster manifests.
+
+---
+
 Design translation step: maps every Docker/Compose concept to its Kubernetes equivalent before writing any YAML.
 
-## Goal of the translation
+## 🎯 Goal of the translation
 
 Move from:
 - "Docker/Compose runs my stack locally"
@@ -10,7 +14,7 @@ Move from:
 To:
 - "Kubernetes resources describe and operate my stack consistently"
 
-## Current container model (input)
+## 📦 Current container model (input)
 
 From `Dockerfile` + `docker-compose.yml`:
 - API container runs `uvicorn app.main:app --host 0.0.0.0 --port 8000`
@@ -20,7 +24,7 @@ From `Dockerfile` + `docker-compose.yml`:
 - DB has persistent storage via named Docker volume
 - Compose `depends_on` + DB healthcheck control startup order
 
-## Compose -> Kubernetes mapping
+## 🔄 Compose -> Kubernetes mapping
 
 | Compose concept | Kubernetes concept | Notes |
 | --- | --- | --- |
@@ -33,7 +37,7 @@ From `Dockerfile` + `docker-compose.yml`:
 | DB volume (`postgres_data`) | `PersistentVolumeClaim` (+ StorageClass) | Keeps DB data across pod restarts/re-schedules. |
 | Container restart policy | Controller reconciliation (Deployment/StatefulSet) | Controller ensures desired state continuously. |
 
-## Runtime unit decisions for this project
+## ⚙️ Runtime unit decisions for this project
 
 ### API runtime unit
 
@@ -52,7 +56,7 @@ From `Dockerfile` + `docker-compose.yml`:
 - Exposure:
   - Internal `Service` only (no external exposure required for app runtime)
 
-## Configuration translation
+## 🗂️ Configuration translation
 
 ### ConfigMap candidates
 
@@ -71,7 +75,7 @@ Preferred approach:
 - Build `DATABASE_URL` from env parts in pod env, or pass full URL from `Secret`.
 - Ensure host is Kubernetes DB service name, not `localhost`.
 
-## Health and dependency translation
+## 🏥 Health and dependency translation
 
 Compose uses `depends_on`; Kubernetes uses probes and controller retries.
 
@@ -84,7 +88,7 @@ Recommended for Phase 3 manifests:
 - Optional:
   - API init container or startup retry logic if strict startup gating is desired
 
-## Service exposure translation
+## 🌐 Service exposure translation
 
 For local Minikube validation:
 - Option 1: `kubectl port-forward service/api 8000:8000`
@@ -93,7 +97,7 @@ For local Minikube validation:
 For production-style setups (later):
 - `Ingress` + controller for HTTP routing
 
-## Helm translation mindset
+## 🧠 Helm translation mindset
 
 Helm should parameterize environment differences, not duplicate logic.
 
@@ -113,9 +117,17 @@ Template families to expect:
 - `pvc.yaml`
 - optional `ingress.yaml`
 
-## Phase 2 completion criteria
+## ✅ Phase 2 completion criteria
 
 This conceptual translation is complete when:
 - Every Compose responsibility has a Kubernetes equivalent.
 - API runtime, service exposure, configuration, and persistence strategy are explicitly defined.
 - Helm parameterization boundaries are clear before writing YAML templates.
+
+---
+
+## 🔗 Related documents
+
+- [Helm guide](./helm-guide.md)
+- [Docker guide](../containers/docker-guide.md)
+- [Architecture decisions](../ARCHITECTURE.md)

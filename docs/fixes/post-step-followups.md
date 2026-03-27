@@ -1,8 +1,12 @@
 # Post-Step Follow-ups
 
+> Small corrections applied after Steps 1–6 were closed. Each item documents what was missed, the fix applied, and why it belongs to a specific earlier step.
+
+---
+
 Tracks small remaining fixes that should have been completed during earlier steps but were missed and then corrected afterward.
 
-## Missed in Step 5: Terraform provider patch-level constraint
+## 🔧 Missed in Step 5: Terraform provider patch-level constraint
 
 What was missed:
 
@@ -27,7 +31,7 @@ terraform -chdir=terraform fmt -check
 terraform -chdir=terraform validate
 ```
 
-## Missed in Step 3: Startup retry vars in `.env.example`
+## 🔧 Missed in Step 3: Startup retry vars in `.env.example`
 
 What was missed:
 
@@ -49,3 +53,11 @@ Validation:
 ```bash
 rg "STARTUP_DB_MAX_RETRIES|STARTUP_DB_RETRY_SECONDS" .env.example app/main.py
 ```
+
+---
+
+## 🔗 Related documents
+
+- [Loose ends roadmap](./loose-ends-priority-roadmap.md)
+- [Terraform posture hardening](./terraform-kubernetes-posture-hardening.md)
+- [Runtime hardening](./runtime-hardening-baseline.md)

@@ -1,12 +1,16 @@
 # Helm Chart Guide
 
+> Reference guide for the `helm/music-platform` chart. Covers chart structure, configurable values, probe tuning, and local validation commands.
+
+---
+
 Organises Kubernetes deployment into a reusable Helm chart.
 
-## Chart location
+## 📂 Chart location
 
 `helm/music-platform`
 
-## Chart structure
+## 📁 Chart structure
 
 ```text
 helm/music-platform/
@@ -25,7 +29,7 @@ helm/music-platform/
     └── serviceaccounts.yaml
 ```
 
-## What each part does
+## 📖 What each part does
 
 - `Chart.yaml`: chart metadata and versioning.
 - `values.yaml`: central place for configurable parameters.
@@ -37,7 +41,7 @@ helm/music-platform/
 - `templates/serviceaccounts.yaml`: dedicated service accounts for the API and DB workloads. Identity names are defined in [security.md](../istio/security.md).
 - `templates/NOTES.txt`: post-install access instructions.
 
-## Main configurable values
+## ⚙️ Main configurable values
 
 - API image repo/tag/pull policy.
 - API replica count and service type/port.
@@ -46,7 +50,7 @@ helm/music-platform/
 - DB name/user/password.
 - DB persistence toggle, storage size, and optional storage class.
 
-## Probe tuning for smoother startup
+## ⏱️ Probe tuning for smoother startup
 
 The API Deployment includes all three HTTP probes at `/health`:
 
@@ -68,7 +72,7 @@ api:
 
 This gives the container up to ~60 seconds to finish startup before Kubernetes treats it as failed.
 
-## Validate chart locally
+## ✅ Validate chart locally
 
 Install Helm if needed:
 
@@ -83,7 +87,7 @@ helm lint helm/music-platform
 helm template music-platform helm/music-platform
 ```
 
-## Install to Minikube
+## ☁️ Install to Minikube
 
 ```bash
 minikube image load music-platform-api:latest
@@ -99,3 +103,11 @@ If your API image uses a different tag, update either:
 - `helm/music-platform/values.yaml` (`api.image.tag`), or
 - command line override:
   - `helm upgrade --install ... --set api.image.tag=<tag>`
+
+---
+
+## 🔗 Related documents
+
+- [Kubernetes concept map](./k8s-concept-map.md)
+- [Istio security](../istio/security.md)
+- [Architecture decisions](../ARCHITECTURE.md)

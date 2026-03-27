@@ -1,6 +1,10 @@
 # Step 3 Fix: Runtime Hardening Baseline
 
-## Problem
+> Closes visible runtime gaps: non-root container user, image healthcheck, Helm resource requests and limits, and explicit `DATABASE_URL` requirement.
+
+---
+
+## 🐛 Problem
 
 Runtime posture still had visible hardening gaps:
 
@@ -9,11 +13,11 @@ Runtime posture still had visible hardening gaps:
 - Helm defaults had no resource requests/limits.
 - Application silently fell back to SQLite when `DATABASE_URL` was not set.
 
-## Goal
+## 🎯 Goal
 
 Reduce weak-runtime signals while preserving existing architecture and deployment flow.
 
-## Implementation
+## 🔧 Implementation
 
 ### 1) Dockerfile hardening
 
@@ -68,7 +72,7 @@ Reason:
 
 - Avoids unbounded runtime defaults and improves scheduler predictability.
 
-## Validation
+## ✅ Validation
 
 Commands:
 
@@ -84,4 +88,12 @@ Checks:
 - Docker build succeeds with non-root user and healthcheck in final image.
 - Helm renders include API/DB resource requests and limits.
 - Python modules compile successfully after DB configuration changes.
+
+---
+
+## 🔗 Related documents
+
+- [Loose ends roadmap](./loose-ends-priority-roadmap.md)
+- [Security defaults hardening](./security-defaults-hardening.md)
+- [Helm guide](../kubernetes/helm-guide.md)
 

@@ -1,6 +1,10 @@
 # Step 4 Fix: Pipeline Reproducibility Hardening
 
-## Problem
+> Makes CI/CD execution deterministic: workflow action SHA pinning, Python dependency pinning, Postgres image digest pinning, and concurrency protection.
+
+---
+
+## 🐛 Problem
 
 Pipeline and runtime inputs were still partially floating:
 
@@ -9,11 +13,11 @@ Pipeline and runtime inputs were still partially floating:
 - Python dependencies were unpinned;
 - PostgreSQL image references in Compose and Helm were loosely tagged.
 
-## Goal
+## 🎯 Goal
 
 Make repeated CI/CD and runtime execution more deterministic and less fragile.
 
-## Implementation
+## 🔧 Implementation
 
 ### 1) Workflow concurrency protection
 
@@ -83,7 +87,7 @@ Reason:
 
 - Aligns local and cluster DB image resolution to a fixed artifact.
 
-## Validation
+## ✅ Validation
 
 Commands:
 
@@ -101,4 +105,12 @@ Checks:
 - Compose config resolves pinned Postgres image reference.
 - Docker build uses pinned Python dependency set.
 - Workflow file includes concurrency block and SHA-pinned action references.
+
+---
+
+## 🔗 Related documents
+
+- [Loose ends roadmap](./loose-ends-priority-roadmap.md)
+- [GitHub Actions guide](../cicd/github-actions.md)
+- [Runtime hardening](./runtime-hardening-baseline.md)
 

@@ -1,6 +1,10 @@
 # Step 2 Fix: Security Defaults Hardening
 
-## Problem
+> Replaces weak Helm defaults (image tag, plaintext DB password, direct secret injection) with intentional, non-demo-grade values and an `existingSecret` fallback strategy.
+
+---
+
+## 🐛 Problem
 
 Helm defaults exposed weak security posture:
 
@@ -8,11 +12,11 @@ Helm defaults exposed weak security posture:
 - `db.password` default was plaintext (`postgres`) in `values.yaml`.
 - Secret template used chart values directly, encouraging demo-style secret handling.
 
-## Goal
+## 🎯 Goal
 
 Make chart defaults safer and more intentional without breaking deployment flow.
 
-## Implementation
+## 🔧 Implementation
 
 ### 1) Safer API image default tag
 
@@ -65,7 +69,7 @@ Reason:
 - Removes direct dependency on insecure default values.
 - Improves credential handling while preserving install/upgrade usability.
 
-## Validation
+## ✅ Validation
 
 Commands:
 
@@ -80,4 +84,12 @@ Checks:
 - Chart lints successfully.
 - Default render contains Secret with non-empty password and `DATABASE_URL`.
 - Render with `db.existingSecret` does not create chart-managed Secret and references `my-db-secret` in API/DB manifests.
+
+---
+
+## 🔗 Related documents
+
+- [Loose ends roadmap](./loose-ends-priority-roadmap.md)
+- [Helm guide](../kubernetes/helm-guide.md)
+- [Runtime hardening](./runtime-hardening-baseline.md)
 

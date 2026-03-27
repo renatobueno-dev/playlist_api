@@ -61,7 +61,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - Terraform foundation (`terraform/`) managing the `music-platform` Kubernetes namespace lifecycle and the `istio-injection=enabled` label as a platform prerequisite
 - Configurable via `kubeconfig_path`, `namespace_name`, `namespace_labels`, and `namespace_annotations` variables
 - Outputs `namespace_name` and `namespace_labels` for downstream reference
-- Provider and version constraints: Terraform `>= 1.6.0`, `hashicorp/kubernetes ~> 2.36`
+- Provider and version constraints: Terraform `>= 1.6.0`, `hashicorp/kubernetes ~> 2.38.0`
 
 ## [1.3.0] — 2026-03-20
 

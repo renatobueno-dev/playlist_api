@@ -1,6 +1,10 @@
 # Step 1 Fix: Namespace Single Source of Truth
 
-## Problem
+> Defines a single runtime namespace source for Terraform, GitHub Actions, and Istio manifests. Eliminates drift risk from hardcoded namespace values.
+
+---
+
+## 🐛 Problem
 
 Namespace ownership was split across three independent places:
 
@@ -10,11 +14,11 @@ Namespace ownership was split across three independent places:
 
 This creates drift risk and makes namespace changes fragile.
 
-## Goal
+## 🎯 Goal
 
 Use one runtime namespace source in deployment flow and ensure Istio resources follow it consistently.
 
-## Implementation
+## 🔧 Implementation
 
 ### 1) Templated Istio manifests
 
@@ -70,7 +74,7 @@ Result:
 - Workflow and Istio apply path share the same namespace source (`NAMESPACE`).
 - Namespace drift between workflow and raw Istio files is removed.
 
-## Validation
+## ✅ Validation
 
 Run locally:
 
@@ -94,4 +98,12 @@ rg "music-platform-dev" /tmp/istio-dev.yaml
 Expected:
 
 - Rendered resources and authorization principals use `music-platform-dev`.
+
+---
+
+## 🔗 Related documents
+
+- [Loose ends roadmap](./loose-ends-priority-roadmap.md)
+- [Istio traffic management](../istio/traffic.md)
+- [GitHub Actions guide](../cicd/github-actions.md)
 

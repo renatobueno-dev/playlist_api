@@ -1,6 +1,10 @@
 # Loose Ends Priority Roadmap
 
-## Context
+> Prioritized remediation plan for confirmed repository loose ends. Each step below links to a dedicated implementation file with problem, goal, and validation details.
+
+---
+
+## 📝 Context
 
 Repository audit confirms real implementation loose ends in code and infrastructure.
 Current documentation quality is strong, so the next cycle focuses on practical remediation with explicit priorities.
@@ -14,7 +18,7 @@ Stage 4 checkpoint emphasis is:
 Terraform is part of the toolset, but not a standalone mission bullet in Stage 4.
 This distinction guides what is checkpoint-priority versus production-polish.
 
-## Confirmed Loose Ends
+## 🔍 Confirmed Loose Ends
 
 This section captures the baseline audit snapshot before remediation steps were executed.
 Implementation status per step is tracked below in the ordered remediation section.
@@ -46,7 +50,7 @@ Implementation status per step is tracked below in the ordered remediation secti
   - Both hardcode `namespace: music-platform`.
   - Traffic file has no `DestinationRule`.
 
-## Priority Model
+## 📊 Priority Model
 
 ### Checkpoint-priority
 
@@ -64,9 +68,9 @@ Implementation status per step is tracked below in the ordered remediation secti
 4. Stricter provider pin granularity.
 5. Additional namespace security posture expansion.
 
-## Ordered Remediation Steps
+## 📍 Ordered Remediation Steps
 
-## Step 1 - Namespace Single Source of Truth
+## 📦 Step 1 - Namespace Single Source of Truth
 
 Status:
 
@@ -81,7 +85,7 @@ Goal:
 
 - Keep namespace ownership coherent across Terraform, Helm/workflow, and Istio apply flow.
 
-## Step 2 - Security Defaults Hardening
+## 🔐 Step 2 - Security Defaults Hardening
 
 Status:
 
@@ -98,7 +102,7 @@ Goal:
   - avoid `latest` as baseline image tag,
   - improve secret value ownership strategy.
 
-## Step 3 - Runtime Hardening Baseline
+## 👊 Step 3 - Runtime Hardening Baseline
 
 Status:
 
@@ -116,7 +120,7 @@ Goal:
   - resource requests/limits defaults,
   - explicit DB runtime configuration policy.
 
-## Step 4 - Pipeline Reproducibility
+## 🔄 Step 4 - Pipeline Reproducibility
 
 Status:
 
@@ -134,7 +138,7 @@ Goal:
   - container image pinning where possible,
   - workflow concurrency protection.
 
-## Step 5 - Terraform/Kubernetes Posture
+## 🏗️ Step 5 - Terraform/Kubernetes Posture
 
 Status:
 
@@ -151,7 +155,7 @@ Goal:
   - clearer namespace posture baseline,
   - explicit backend and locking strategy.
 
-## Step 6 - Istio Resilience Polish (DestinationRule)
+## ✨ Step 6 - Istio Resilience Polish (DestinationRule)
 
 Status:
 
@@ -165,7 +169,7 @@ Goal:
 
 - Move from "Istio present and secure" to "Istio secure and more resilient."
 
-## Post-Step Follow-ups
+## 🔧 Post-Step Follow-ups
 
 Status:
 
@@ -176,7 +180,7 @@ Scope:
 - Terraform provider constraint refined to patch-level (`~> 2.38.0`).
 - Startup DB retry environment variables documented in `.env.example`.
 
-## Recommended Execution Sequence
+## ▶️ Recommended Execution Sequence
 
 Do now:
 
@@ -194,7 +198,7 @@ Do last:
 1. Step 6 - DestinationRule and resilience tuning
 2. Optional production extras (external secrets, advanced backend/locking patterns)
 
-## Immediate Focus
+## 🎯 Immediate Focus
 
 Recommended immediate chain:
 
@@ -203,3 +207,11 @@ Recommended immediate chain:
 3. Container/runtime hardening
 
 This sequence gives the best checkpoint value per effort while keeping later improvements simpler and safer.
+
+---
+
+## 🔗 Related documents
+
+- [Fixes index](./README.md)
+- [Namespace single source of truth](./namespace-single-source-of-truth.md)
+- [Security defaults hardening](./security-defaults-hardening.md)

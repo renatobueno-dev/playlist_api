@@ -1,16 +1,20 @@
 # Step 6 Fix: Istio DestinationRule Resilience Baseline
 
-## Problem
+> Adds a `DestinationRule` to upgrade Istio traffic posture from “present and secure” to “secure and more resilient” using conservative connection pool and outlier detection defaults.
+
+---
+
+## 🐛 Problem
 
 Istio traffic resources already provided ingress and routing (`Gateway` + `VirtualService`), but there was no `DestinationRule` in project manifests.
 
 Without `DestinationRule`, mesh traffic policy behavior depends on implicit defaults, reducing resilience control.
 
-## Goal
+## 🎯 Goal
 
 Upgrade Istio traffic posture from "present and secure" to "present, secure, and more resilient" using conservative defaults.
 
-## Implementation
+## 🔧 Implementation
 
 ### Added DestinationRule
 
@@ -44,7 +48,7 @@ Reason:
 - Adds explicit mesh behavior for load distribution, connection pressure handling, and unhealthy endpoint ejection.
 - Keeps policy conservative enough for checkpoint scope while still providing real resilience controls.
 
-## Validation
+## ✅ Validation
 
 Commands:
 
@@ -59,4 +63,12 @@ Checks:
 - Rendered output contains `DestinationRule/playcatch-api-resilience`.
 - Rendered output contains expected resilience policy keys.
 - No unresolved template placeholders remain.
+
+---
+
+## 🔗 Related documents
+
+- [Loose ends roadmap](./loose-ends-priority-roadmap.md)
+- [Istio traffic management](../istio/traffic.md)
+- [Istio security](../istio/security.md)
 
