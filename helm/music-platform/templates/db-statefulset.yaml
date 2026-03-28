@@ -19,6 +19,10 @@ spec:
         app.kubernetes.io/component: db
     spec:
       serviceAccountName: {{ include "music-platform.dbServiceAccountName" . }}
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       {{- if not .Values.db.persistence.enabled }}
       volumes:
         - name: data
@@ -28,6 +32,12 @@ spec:
         - name: postgres
           image: "{{ .Values.db.image.repository }}:{{ .Values.db.image.tag }}"
           imagePullPolicy: {{ .Values.db.image.pullPolicy }}
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           ports:
             - name: postgres
               containerPort: {{ .Values.db.service.port }}

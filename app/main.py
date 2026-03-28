@@ -49,7 +49,7 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(
     title="Music Platform API",
-    version="0.1.0",
+    version="1.6.0",
     lifespan=lifespan,
 )
 
