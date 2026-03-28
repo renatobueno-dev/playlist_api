@@ -1,13 +1,13 @@
 # Music Platform API
 
 ![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?logo=fastapi&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.135.1-009688?logo=fastapi&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-Helm-326CE5?logo=kubernetes&logoColor=white)
 ![Terraform](https://img.shields.io/badge/Terraform-IaC-7B42BC?logo=terraform&logoColor=white)
+![CI](https://github.com/renatobueno-dev/playlist_api/actions/workflows/deploy.yml/badge.svg)
 ![Istio](https://img.shields.io/badge/Istio-service_mesh-466BB0?logo=istio&logoColor=white)
-![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)
 
 ## 📚 Purpose
 
@@ -53,15 +53,15 @@ This repository is for study. Before using in production:
 │   ├── traffic-management.yaml
 │   └── security-policies.yaml
 ├── terraform/                     # Environment foundation
-│   ├── main.tf / variables.tf / outputs.tf / versions.tf
+│   ├── main.tf / variables.tf / outputs.tf / versions.tf / backend.tf
 ├── docs/                          # Reference documentation (by topic)
 │   ├── README.md                  # Navigation index
 │   ├── domain/      (domain-scope, crud-endpoint-plan)
-│   ├── containers/  (docker-guide)
+│   ├── containers/  (docker-guide, compose-guide)
 │   ├── kubernetes/  (k8s-concept-map, helm-guide)
 │   ├── istio/       (readiness, traffic, security)
 │   ├── cicd/        (github-actions)
-│   └── terraform/   (scope, helm-boundary, min-scope, flow-integration)
+│   └── terraform/   (scope-and-boundary, flow-integration)
 ```
 
 **Request layer flow:** `routes` → `schemas` → `services` → `models` → `database`
@@ -72,18 +72,19 @@ This repository is for study. Before using in production:
 
 1. Create and activate a virtual environment:
    ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # Windows: .\venv\Scripts\activate
+   python3 -m venv .venv
+   source .venv/bin/activate  # Windows: .\.venv\Scripts\activate
    ```
 2. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-3. Start the server (uses SQLite by default — no database needed):
+3. Start the server — `DATABASE_URL` is required. For a quick run without PostgreSQL, use SQLite:
    ```bash
+   export DATABASE_URL=sqlite:///./music.db
    uvicorn app.main:app --reload
    ```
-   To use PostgreSQL instead, set `DATABASE_URL` before starting (see [SETUP.md](docs/SETUP.md)).
+   To use PostgreSQL instead, set `DATABASE_URL` to a connection string (see [SETUP.md](docs/SETUP.md)).
 
 - Swagger UI: `http://127.0.0.1:8000/docs`
 - ReDoc: `http://127.0.0.1:8000/redoc`
@@ -106,11 +107,11 @@ API: `http://localhost:8000/`
 | `GET` | `/` | API status message |
 | `GET` | `/health` | Service healthcheck |
 | `GET/POST` | `/songs/` | List / create songs |
-| `GET/PATCH/DELETE` | `/songs/{id}` | Get / update / delete song |
+| `GET/PATCH/DELETE` | `/songs/{song_id}` | Get / update / delete song |
 | `GET/POST` | `/playlists/` | List / create playlists |
-| `GET/PATCH/DELETE` | `/playlists/{id}` | Get / update / delete playlist |
-| `POST` | `/playlists/{id}/songs/{song_id}` | Link song to playlist |
-| `DELETE` | `/playlists/{id}/songs/{song_id}` | Unlink song from playlist |
+| `GET/PATCH/DELETE` | `/playlists/{playlist_id}` | Get / update / delete playlist |
+| `POST` | `/playlists/{playlist_id}/songs/{song_id}` | Link song to playlist |
+| `DELETE` | `/playlists/{playlist_id}/songs/{song_id}` | Unlink song from playlist |
 
 Playlist `PATCH` accepts optional `song_ids` — if provided, links are replaced; if omitted, unchanged.
 Non-existent IDs return `404`.
@@ -123,9 +124,9 @@ Full reference in [`docs/`](./docs/README.md):
 
 | Topic | Files |
 | --- | --- |
-| Project-wide | [CHANGELOG.md](./CHANGELOG.md) · [ARCHITECTURE.md](./docs/ARCHITECTURE.md) · [SETUP.md](./docs/SETUP.md) · [QUALITY.md](./docs/QUALITY.md) · [DEVELOPMENT_LOG.md](./docs/DEVELOPMENT_LOG.md) |
-| Domain | [domain-scope](./docs/domain/domain-scope.md) · [crud-endpoint-plan](./docs/domain/crud-endpoint-plan.md) |
-| Containers | [docker-guide](./docs/containers/docker-guide.md) |
+| Project-wide | [CHANGELOG.md](./CHANGELOG.md) · [ARCHITECTURE.md](./docs/ARCHITECTURE.md) · [INFRA_DECISIONS.md](./docs/INFRA_DECISIONS.md) · [SETUP.md](./docs/SETUP.md) · [QUALITY.md](./docs/QUALITY.md) · [DEVELOPMENT_LOG.md](./docs/DEVELOPMENT_LOG.md) · [DEVELOPMENT_DIARY.md](./docs/DEVELOPMENT_DIARY.md) |
+| Domain | [API.md](./docs/API.md) · [domain-scope](./docs/domain/domain-scope.md) · [crud-endpoint-plan](./docs/domain/crud-endpoint-plan.md) |
+| Containers | [docker-guide](./docs/containers/docker-guide.md) · [compose-guide](./docs/containers/compose-guide.md) |
 | Kubernetes | [k8s-concept-map](./docs/kubernetes/k8s-concept-map.md) · [helm-guide](./docs/kubernetes/helm-guide.md) |
 | Istio | [readiness](./docs/istio/readiness.md) · [traffic](./docs/istio/traffic.md) · [security](./docs/istio/security.md) |
 | CI/CD | [github-actions](./docs/cicd/github-actions.md) |

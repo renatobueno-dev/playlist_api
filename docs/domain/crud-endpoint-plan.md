@@ -1,6 +1,6 @@
 # CRUD Endpoint Plan
 
-> CRUD route planning artifact for the Song and Playlist resources. For the stable API reference guide, see [api.md](../api.md).
+> CRUD route planning artifact for the Song and Playlist resources. For the stable API reference guide, see [API.md](../API.md).
 
 ---
 
@@ -51,6 +51,6 @@ Both endpoints return the full updated `PlaylistRead` object — including the c
 
 ## 🔗 Related documents
 
-- [API reference](../api.md)
+- [API reference](../API.md)
 - [Domain scope](./domain-scope.md)
 - [Architecture decisions](../ARCHITECTURE.md)

@@ -9,6 +9,30 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `helm/music-platform/templates/api-deployment.yaml`: pod-level `securityContext` (`runAsNonRoot: true`, `seccompProfile: RuntimeDefault`) and container-level `securityContext` (`allowPrivilegeEscalation: false`, `capabilities.drop: ALL`, `readOnlyRootFilesystem: true`)
+- `helm/music-platform/templates/db-statefulset.yaml`: pod-level `securityContext` (`runAsNonRoot: true`, `seccompProfile: RuntimeDefault`) and container-level `securityContext` (`allowPrivilegeEscalation: false`, `capabilities.drop: ALL`)
+- `.github/workflows/deploy.yml`: "Cleanup kubeconfig" step that always removes `~/.kube/config` after the deploy job, preventing credential persistence on the runner
+
+### Changed
+
+- `docs/SETUP_AND_QUALITY.md` split into `docs/SETUP.md` (environment variables and setup steps) and `docs/QUALITY.md` (testing guide and CI overview)
+- `docs/containers/docker-guide.md` scoped to image-build steps only (A–C); Docker Compose steps moved to new `docs/containers/compose-guide.md` (D–E)
+- `docs/ARCHITECTURE.md` scoped to application-level decisions only; Kubernetes, Istio, Terraform, and CI/CD decisions moved to new `docs/INFRA_DECISIONS.md`
+- `docs/terraform/scope.md`, `helm-boundary.md`, and `min-scope.md` consolidated into `docs/terraform/scope-and-boundary.md`
+- `docs/API.md` added as stable API endpoint reference
+- FastAPI badge corrected from `0.111` to `0.135.1` in `README.md`
+- `DATABASE_URL` fallback documentation corrected — `database.py` raises `RuntimeError` when the variable is missing; SQLite is supported if an explicit `sqlite://` URL is set, not as a silent default
+- `terraform/backend.tf`: backend changed from `local` (file path `terraform.tfstate`) to `kubernetes` (cluster secret `music-platform` in `default` namespace)
+
+### Fixed
+
+- `Dockerfile`: `HEALTHCHECK --timeout` increased from `3s` to `5s` to reduce false positives under slow startup conditions
+- `scripts/render-istio-manifests.sh`: added `escape_sed_replacement()` helper; all placeholder values are now escaped before `sed` substitution to prevent broken output when values contain `|`, `&`, or `\`
+- `.github/workflows/deploy.yml`: updated pinned action SHAs for `actions/checkout`, `docker/setup-buildx-action`, `docker/login-action`, and `docker/build-push-action` to their latest pinned commit hashes
+- `docs/istio/security.md`: "Apply and verify" block corrected — replaced direct `kubectl apply -f k8s/istio/security-policies.yaml` with `./scripts/render-istio-manifests.sh | kubectl apply -n music-platform -f -` (manifest uses placeholder variables requiring interpolation before apply)
+
 ## [1.6.0] — 2026-03-23
 
 ### Added

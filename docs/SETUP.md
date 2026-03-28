@@ -2,7 +2,7 @@
 
 This document covers environment configuration and detailed setup steps for all execution modes.
 
-> For API endpoints and schemas, see [api.md](./api.md). For architecture decisions, see [ARCHITECTURE.md](./ARCHITECTURE.md). For testing and CI, see [QUALITY.md](./QUALITY.md).
+> For API endpoints and schemas, see [API.md](./API.md). For architecture decisions, see [ARCHITECTURE.md](./ARCHITECTURE.md). For testing and CI, see [QUALITY.md](./QUALITY.md).
 
 ---
 
@@ -10,7 +10,7 @@ This document covers environment configuration and detailed setup steps for all 
 
 ### Local (without Docker)
 
-No `.env` file is required for a minimal local run — `database.py` falls back to `sqlite:///./music.db` when `DATABASE_URL` is not set.
+`DATABASE_URL` is always required — `database.py` raises `RuntimeError` if it is missing. For a minimal local run without PostgreSQL, use a SQLite path.
 
 To use PostgreSQL locally, copy `.env.example` and set values:
 
@@ -53,8 +53,8 @@ DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/music_platfor
 
 1. **Create and activate a virtual environment**
    ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # Windows: .\venv\Scripts\activate
+   python3 -m venv .venv
+   source .venv/bin/activate  # Windows: .\.venv\Scripts\activate
    ```
 
 2. **Install dependencies**
@@ -62,12 +62,13 @@ DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/music_platfor
    pip install -r requirements.txt
    ```
 
-3. **Start the server** (SQLite fallback — no PostgreSQL needed)
+3. **Start the server with SQLite** (no PostgreSQL needed)
    ```bash
+   export DATABASE_URL=sqlite:///./music.db
    uvicorn app.main:app --reload
    ```
 
-4. **To use PostgreSQL locally**, set the environment variable before starting:
+4. **To use PostgreSQL locally** instead, set a PostgreSQL connection string:
    ```bash
    export DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/music_platform
    uvicorn app.main:app --reload
@@ -144,7 +145,7 @@ For Helm values reference, see [`docs/kubernetes/helm-guide.md`](./kubernetes/he
 
 ## 🔗 Related documents
 
-- [API reference](./api.md)
+- [API reference](./API.md)
 - [Architecture decisions](./ARCHITECTURE.md)
 - [Quality guide](./QUALITY.md)
 - [Development Log](./DEVELOPMENT_LOG.md)

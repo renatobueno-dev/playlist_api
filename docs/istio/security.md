@@ -53,7 +53,7 @@ Helm templates updated:
 
 ```bash
 helm upgrade --install music-platform helm/music-platform --namespace music-platform --create-namespace
-kubectl apply -f k8s/istio/security-policies.yaml
+./scripts/render-istio-manifests.sh | kubectl apply -n music-platform -f -
 kubectl get peerauthentication,authorizationpolicy -n music-platform
 ```
 

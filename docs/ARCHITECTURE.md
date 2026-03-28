@@ -94,9 +94,9 @@ Silent replacement of existing links without explicit intent would be destructiv
 
 ## 🗃️ Database Decisions
 
-### SQLite fallback in development
+### SQLite support in local development
 
-`app/database.py` reads `DATABASE_URL` from the environment, defaulting to `sqlite:///./music.db`. This allows local development without running PostgreSQL. Docker Compose and Kubernetes always set a real `DATABASE_URL`.
+`app/database.py` requires `DATABASE_URL` to be set — it raises `RuntimeError` if the variable is missing. For local development without PostgreSQL, set `DATABASE_URL=sqlite:///./music.db`. Docker Compose and Kubernetes always inject a PostgreSQL `DATABASE_URL`.
 
 ### `check_same_thread` for SQLite only
 
@@ -133,70 +133,13 @@ A domain-specific exception was created instead of returning `None` or raising a
 
 ---
 
-## ☸️ Kubernetes Decisions
-
-### StatefulSet for PostgreSQL
-
-`StatefulSet` was chosen over `Deployment` for the database workload. A `Deployment` could work in simple cases but `StatefulSet` provides stable pod identity and guaranteed PVC binding — the correct resource for stateful services that must preserve data across pod restarts.
-
-### Three-probe strategy
-
-Each pod uses three distinct probes with explicit roles:
-
-| Probe          | Role                                                                   |
-|----------------|------------------------------------------------------------------------|
-| `startupProbe` | Gives the pod time to initialise before liveness kicks in               |
-| `readinessProbe`| Controls when the pod receives traffic                                 |
-| `livenessProbe`| Restarts the pod if the process becomes unresponsive                   |
-
-Default values (`failureThreshold: 30`, `periodSeconds: 2`) give ~60 seconds of grace — enough for Uvicorn startup plus database connection. Configured under `api.probes` in `helm/music-platform/values.yaml`.
-
-Full chart reference: [`docs/kubernetes/helm-guide.md`](./kubernetes/helm-guide.md)
+> For Kubernetes, Istio, Terraform, and CI/CD design decisions, see [INFRA_DECISIONS.md](./INFRA_DECISIONS.md).
 
 ---
 
-## 🕸️ Istio Decisions
-
-### mTLS STRICT and ServiceAccount identity
-
-`PeerAuthentication` enforces `STRICT` mTLS across the namespace. This rejects any non-mTLS traffic and requires dedicated `ServiceAccount` resources (`music-platform-api-sa`, `music-platform-db-sa`) so that `AuthorizationPolicy` rules can use principal identity rather than just namespace.
-
-The practical consequence: Helm templates include `serviceaccounts.yaml`, referenced by both the `Deployment` and `StatefulSet` manifests.
-
-### Gateway / VirtualService / Service distinction
-
-The Kubernetes `Service` handles pod discovery only — no HTTP awareness. The Istio `Gateway` is the external entry point into the mesh; the `VirtualService` defines HTTP routing after entry. Full mapping and validation steps: [`docs/istio/traffic.md`](./istio/traffic.md) · [`docs/istio/security.md`](./istio/security.md)
-
----
-
-## 🏗️ Terraform Decisions
-
-### Conservative dual-ownership scope
-
-The primary risk of Terraform alongside Helm is dual ownership: if both manage the same Kubernetes object, `apply` runs conflict. The chosen scope is minimal and safe: Terraform owns the namespace and the `istio-injection=enabled` label only. All workloads stay exclusively in Helm.
-
-The full ownership matrix and anti-conflict rules are in [`docs/terraform/scope-and-boundary.md`](./terraform/scope-and-boundary.md).
-
----
-
-## ⚙️ CI/CD Decisions
-
-### Deploy guard by secret
-
-The workflow skips cluster operations if `KUBE_CONFIG_DATA` is absent, emitting a `::notice::` instead of failing with an opaque auth error. This makes the workflow safe to run in forks or environments without a configured cluster.
-
-### Pinned CLI versions
-
-`kubectl`, `helm`, and `terraform` are installed at fixed versions. Using `latest` in CI means a silent tool update can break the pipeline without any code change.
-
-### Terraform binary collision fix
-
-The project has a `terraform/` directory at the root. The default Terraform install script extracts the binary into the working directory, causing a directory name collision. The cause is documented here; the implemented fix is in [`docs/cicd/github-actions.md`](./cicd/github-actions.md) under "Known CI troubleshooting case".
-
----
-
-## Related documents
+## 🔗 Related documents
 
 - [Domain scope and endpoint plan](./domain/domain-scope.md)
+- [INFRA_DECISIONS.md](./INFRA_DECISIONS.md)
 - [Kubernetes concept map](./kubernetes/k8s-concept-map.md)
 - [Development Log](./DEVELOPMENT_LOG.md)
