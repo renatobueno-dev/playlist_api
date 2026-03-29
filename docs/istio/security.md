@@ -24,7 +24,7 @@ Restricted traffic:
 
 Manifest file: `k8s/istio/security-policies.yaml`
 
-> ⚠️ This manifest uses `__NAMESPACE__`, `__API_SERVICE_ACCOUNT__`, and `__CLUSTER_DOMAIN__` placeholders — it is never applied directly. Use `scripts/render-istio-manifests.sh` to interpolate environment values before applying. In CI/CD the workflow step `Apply Istio traffic and security policies` runs this automatically. For local apply: `./scripts/render-istio-manifests.sh | kubectl apply -n music-platform -f -`
+> ⚠️ This manifest uses `__NAMESPACE__`, `__API_SERVICE_ACCOUNT__`, and `__CLUSTER_DOMAIN__` placeholders — it is never applied directly. Use `scripts/render-istio-manifests.sh` to interpolate environment values before applying. The repository uses one shared render/apply path for both Istio files. In CI/CD the workflow step `Apply Istio traffic and security policies` runs this automatically. For local apply: `./scripts/render-istio-manifests.sh | kubectl apply -n music-platform -f -`
 
 Resources:
 
@@ -64,7 +64,8 @@ Optional checks:
 - Confirm pod identities:
   - `kubectl get pod -n music-platform <pod-name> -o jsonpath='{.spec.serviceAccountName}'`
 - Confirm API still reachable via ingress host:
-  - `curl -H "Host: playcatch.local" http://127.0.0.1:18080/health`
+  - `kubectl port-forward -n istio-system svc/istio-ingressgateway 18443:443`
+  - `curl -k --resolve playcatch.local:18443:127.0.0.1 https://playcatch.local:18443/health`
 
 ---
 

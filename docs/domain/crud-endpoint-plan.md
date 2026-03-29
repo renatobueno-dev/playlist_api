@@ -45,7 +45,7 @@ This document defines the complete CRUD route map before implementing the missin
 | Add song to playlist | `POST` | `/playlists/{playlist_id}/songs/{song_id}` | `PlaylistRead` | `201` | `404` |
 | Remove song from playlist | `DELETE` | `/playlists/{playlist_id}/songs/{song_id}` | — | `204` | `404` |
 
-`POST` returns the full updated `PlaylistRead` object — including the complete `songs` list after the operation. This means the caller always sees the resulting playlist state without needing a separate `GET` request. `DELETE` returns no body (`204 No Content`) and is idempotent — a second call returns `204` even if the link no longer exists.
+`POST` returns the full updated `PlaylistRead` object — including the complete `songs` list after the operation. This means the caller always sees the resulting playlist state without needing a separate `GET` request. If the song is already linked, the endpoint still returns `201` with the current playlist state and does not create a duplicate association. `DELETE` returns no body (`204 No Content`) and is idempotent — a second call returns `204` even if the link no longer exists.
 
 ---
 

@@ -52,6 +52,8 @@ This repository is for study. Before using in production:
 ├── k8s/istio/                     # Istio manifests
 │   ├── traffic-management.yaml
 │   └── security-policies.yaml
+├── scripts/                       # Deployment helpers
+│   └── render-istio-manifests.sh
 ├── terraform/                     # Environment foundation
 │   ├── main.tf / variables.tf / outputs.tf / versions.tf / backend.tf
 ├── docs/                          # Reference documentation (by topic)

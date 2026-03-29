@@ -9,7 +9,7 @@ Integrates Terraform as a prerequisite step in the full delivery sequence.
 ## 🔄 Integrated delivery sequence
 
 1. Terraform foundation
-   - Manage namespace baseline (`music-platform`) and required labels (Istio injection).
+   - Manage namespace baseline (`music-platform`) and required labels (Istio injection plus Pod Security Standards labels).
 2. Helm application release
    - Deploy API and DB chart resources.
 3. Istio application integration

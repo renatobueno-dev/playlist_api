@@ -16,7 +16,7 @@ Use Terraform as the infrastructure-definition layer for reproducible platform p
 
 1. Namespace foundation
    - `music-platform` namespace lifecycle.
-   - Baseline namespace labels/annotations required by platform behaviour (e.g. `istio-injection=enabled`).
+   - Baseline namespace labels/annotations required by platform behaviour (for example `istio-injection=enabled` plus Pod Security Standards labels).
 2. Platform-level prerequisites
    - Cluster resources that must exist before app deployment starts.
    - Shared environment-level settings consumed by deployment automation.
@@ -34,7 +34,7 @@ Use Terraform as the infrastructure-definition layer for reproducible platform p
 | Resource | Owner | Rationale |
 |----------|-------|-----------|
 | `music-platform` namespace | Terraform | Long-lived infrastructure prerequisite |
-| Namespace labels (`istio-injection=enabled`) | Terraform | Platform baseline, not app config |
+| Namespace labels (`istio-injection=enabled` + Pod Security Standards labels) | Terraform | Platform baseline, not app config |
 | API Deployment/Service | Helm | Application release packaging |
 | DB StatefulSet/Service | Helm | Application release packaging |
 | Image tag / replica count | Helm + CI/CD | Per-release values |
@@ -51,9 +51,11 @@ Use Terraform as the infrastructure-definition layer for reproducible platform p
 The minimum Terraform-managed infrastructure in this project is:
 
 1. `music-platform` Kubernetes namespace.
-2. Namespace label: `istio-injection=enabled`.
+2. Namespace baseline labels:
+   - `istio-injection=enabled`
+   - Pod Security Standards labels: `pod-security.kubernetes.io/enforce`, `warn`, `audit`, `enforce-version`, `warn-version`, and `audit-version`
 
-No additional resources are included in the minimum scope.
+These labels are driven by Terraform inputs such as `pod_security_level` and `pod_security_version`. No workload resources are included in the minimum scope.
 
 **Why this is the safest minimum:**
 - Infrastructure-level, not app-release-level.

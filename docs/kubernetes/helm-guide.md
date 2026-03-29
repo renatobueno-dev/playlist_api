@@ -64,13 +64,13 @@ Default startup values in `values.yaml`:
 api:
   probes:
     startup:
-      initialDelaySeconds: 0
+      initialDelaySeconds: 5
       periodSeconds: 2
       timeoutSeconds: 2
       failureThreshold: 30
 ```
 
-This gives the container up to ~60 seconds to finish startup before Kubernetes treats it as failed.
+This gives the container up to ~65 seconds to finish startup before Kubernetes treats it as failed.
 
 ## ✅ Validate chart locally
 
@@ -90,7 +90,7 @@ helm template music-platform helm/music-platform
 ## ☁️ Install to Minikube
 
 ```bash
-minikube image load music-platform-api:latest
+minikube image load music-platform-api:1.6.1
 helm upgrade --install music-platform helm/music-platform --namespace music-platform --create-namespace
 kubectl get all -n music-platform
 kubectl port-forward svc/music-platform-api 8000:8000 -n music-platform
@@ -99,7 +99,7 @@ kubectl port-forward svc/music-platform-api 8000:8000 -n music-platform
 Open:
 - `http://127.0.0.1:8000/docs`
 
-If your API image uses a different tag, update either:
+This example matches the current chart default in `values.yaml` (`api.image.tag: 1.6.1`). If your API image uses a different tag, update either:
 - `helm/music-platform/values.yaml` (`api.image.tag`), or
 - command line override:
   - `helm upgrade --install ... --set api.image.tag=<tag>`

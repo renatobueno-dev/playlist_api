@@ -120,7 +120,7 @@ API available at: `http://localhost:8000/`
 
 1. **Load image into Minikube** (local cluster only)
    ```bash
-   minikube image load music-platform-api:latest
+   minikube image load music-platform-api:1.6.1
    ```
 
 2. **Install the Helm chart**
@@ -129,6 +129,8 @@ API available at: `http://localhost:8000/`
      --namespace music-platform \
      --create-namespace
    ```
+
+   The default chart path assembles and injects `DATABASE_URL` through `helm/music-platform/templates/secret.yaml`, so you do not need to set it manually for Kubernetes installs unless you are overriding the chart's secret handling.
 
 3. **Forward the API port**
    ```bash

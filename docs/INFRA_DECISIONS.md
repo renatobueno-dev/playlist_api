@@ -20,7 +20,7 @@ Each pod uses three distinct probes with explicit roles:
 | `readinessProbe`| Controls when the pod receives traffic                                 |
 | `livenessProbe` | Restarts the pod if the process becomes unresponsive                   |
 
-Default values (`failureThreshold: 30`, `periodSeconds: 2`) give ~60 seconds of grace — enough for Uvicorn startup plus database connection. Configured under `api.probes` in `helm/music-platform/values.yaml`.
+Default values (`initialDelaySeconds: 5`, `failureThreshold: 30`, `periodSeconds: 2`) give up to ~65 seconds of grace — enough for Uvicorn startup plus database connection. Configured under `api.probes` in `helm/music-platform/values.yaml`.
 
 Full chart reference: [`docs/kubernetes/helm-guide.md`](./kubernetes/helm-guide.md)
 
@@ -40,7 +40,7 @@ The Kubernetes `Service` handles pod discovery only — no HTTP awareness. The I
 
 ### Istio manifest templating
 
-Manifests in `k8s/istio/` use `__NAMESPACE__`, `__ISTIO_HOST__`, and `__API_SERVICE_HOST__` placeholders and are rendered at deploy time via `scripts/render-istio-manifests.sh`. This keeps namespace and service names consistent without duplicating values across files.
+Manifests in `k8s/istio/` use `__NAMESPACE__`, `__ISTIO_HOST__`, `__ISTIO_TLS_SECRET__`, `__API_SERVICE_HOST__`, `__CLUSTER_DOMAIN__`, and `__API_SERVICE_ACCOUNT__` placeholders and are rendered at deploy time via `scripts/render-istio-manifests.sh`. This keeps namespace, TLS, and service identity values consistent without duplicating them across files.
 
 ---
 
@@ -48,7 +48,7 @@ Manifests in `k8s/istio/` use `__NAMESPACE__`, `__ISTIO_HOST__`, and `__API_SERV
 
 ### Conservative dual-ownership scope
 
-The primary risk of Terraform alongside Helm is dual ownership: if both manage the same Kubernetes object, `apply` runs conflict. The chosen scope is minimal and safe: Terraform owns the namespace and the `istio-injection=enabled` label only. All workloads stay exclusively in Helm.
+The primary risk of Terraform alongside Helm is dual ownership: if both manage the same Kubernetes object, `apply` runs conflict. The chosen scope is minimal and safe: Terraform owns the namespace plus the required baseline labels, including `istio-injection=enabled` and the Pod Security Standards `enforce`, `warn`, `audit`, and `*-version` labels. All workloads stay exclusively in Helm.
 
 The full ownership matrix and anti-conflict rules are in [`docs/terraform/scope-and-boundary.md`](./terraform/scope-and-boundary.md). Minimum locked scope is documented in the same file.
 
