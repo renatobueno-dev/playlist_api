@@ -17,7 +17,9 @@ Automates validation, build/push, and deployment into a reproducible CI/CD workf
 2. `push` on `main`:
    - Runs validation, image build/push, and deploy.
 3. `workflow_dispatch`:
-   - Allows manual deployment run from GitHub UI.
+   - Allows manual workflow execution from GitHub UI.
+   - Deploy still runs only on `refs/heads/main` because the deploy job is gated by branch condition.
+   - Manual runs from non-`main` refs execute validation but skip deploy.
 
 ## 🔧 What it checks/builds/deploys
 

@@ -26,11 +26,15 @@ File:
 
 Change:
 
-- `api.image.tag` changed from `latest` to `0.1.0`.
+- At Step 2 implementation time, `api.image.tag` changed from `latest` to `0.1.0` to remove floating defaults.
 
 Reason:
 
 - Avoids floating default behavior.
+
+Current baseline:
+
+- The chart now tracks release-tag values in `helm/music-platform/values.yaml` (currently `1.6.1`), not `0.1.0`.
 
 ### 2) Removed plaintext DB password default
 
@@ -92,4 +96,3 @@ Checks:
 - [Loose ends roadmap](./loose-ends-priority-roadmap.md)
 - [Helm guide](../kubernetes/helm-guide.md)
 - [Runtime hardening](./runtime-hardening-baseline.md)
-

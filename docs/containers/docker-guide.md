@@ -34,11 +34,11 @@ Goal:
 
 Commands:
 
-> `DATABASE_URL` is always required — the app raises `RuntimeError` at startup if it is missing. Use a SQLite path to run without an external database.
+> `DATABASE_URL` is always required — the app raises `RuntimeError` at startup if it is missing. For standalone container runs, use a writable path such as `/tmp/music.db` (`sqlite:////tmp/music.db`).
 
 ```bash
 docker build -t music-platform-api:stepb .
-docker run --rm -d --name stepb-api-test -p 8000:8000 -e DATABASE_URL=sqlite:///./music.db music-platform-api:stepb
+docker run --rm -d --name stepb-api-test -p 8000:8000 -e DATABASE_URL=sqlite:////tmp/music.db music-platform-api:stepb
 ```
 
 Validation:
@@ -64,7 +64,7 @@ Goal:
 Recommended checks:
 
 ```bash
-docker run --rm -d --name stepc-api-test -p 8000:8000 -e DATABASE_URL=sqlite:///./music.db music-platform-api:stepb
+docker run --rm -d --name stepc-api-test -p 8000:8000 -e DATABASE_URL=sqlite:////tmp/music.db music-platform-api:stepb
 docker inspect -f '{{.State.Running}}' stepc-api-test
 docker inspect -f '{{.RestartCount}}' stepc-api-test
 docker logs --tail 100 stepc-api-test

@@ -57,7 +57,7 @@ When running locally: `http://localhost:8000`
 ## 📌 Notes
 
 - `SongUpdate` and `PlaylistUpdate` are **partial-update schemas** (all fields optional) — this is why `PATCH` is used instead of `PUT`.
-- `PlaylistCreate` and `PlaylistUpdate` accept `song_ids: list[int]`. If provided, existing song links are **replaced**; if omitted, links are unchanged.
+- `PlaylistCreate` and `PlaylistUpdate` accept `song_ids` as a list of positive integers (`> 0`). If provided, existing song links are **replaced**; if omitted, links are unchanged.
 - Non-existent IDs return `404`.
 - Interactive docs: `/docs` (Swagger UI) and `/redoc` (ReDoc) when the server is running.
 

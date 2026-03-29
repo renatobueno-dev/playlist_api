@@ -26,11 +26,12 @@ File:
 
 Change:
 
-- Kubernetes provider constraint moved to `~> 2.38`.
+- At Step 5 implementation time, Kubernetes provider constraint moved from `~> 2.36` to `~> 2.38`.
+- In a later follow-up, it was tightened to patch-level `~> 2.38.0` (current baseline in `terraform/versions.tf`).
 
 Reason:
 
-- Aligns the declared provider policy with the branch already used in lockfile/runtime.
+- Removed the broad initial constraint first, then aligned provider policy to patch-level for deterministic behavior.
 
 ### 2) Namespace Pod Security baseline
 
@@ -100,4 +101,3 @@ Checks:
 - [Loose ends roadmap](./loose-ends-priority-roadmap.md)
 - [Terraform scope and boundary](../terraform/scope-and-boundary.md)
 - [Pipeline reproducibility](./pipeline-reproducibility-hardening.md)
-

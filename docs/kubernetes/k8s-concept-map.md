@@ -31,7 +31,7 @@ From `Dockerfile` + `docker-compose.yml`:
 | `api` service container | `Deployment` for API Pods | Runtime unit for stateless app replicas. |
 | `db` service container | `StatefulSet` (preferred) or `Deployment` | DB is stateful; `StatefulSet` is safer for identity/storage semantics. |
 | `ports: 8000:8000` for API | `Service` (ClusterIP) + external access option (`NodePort` / Ingress / port-forward) | In Minikube, `NodePort` or `kubectl port-forward` is simplest. |
-| Compose service-to-service DNS (`db`) | Kubernetes DNS (`db.<namespace>.svc`) via `Service` | App should connect to DB service name, not pod IP. |
+| Compose service-to-service DNS (`db`) | Kubernetes DNS via `Service` (`music-platform-db.<namespace>.svc` in this chart) | App should connect to DB service name, not pod IP. |
 | Environment variables in Compose | `ConfigMap` + `Secret` + pod `env` | Non-sensitive values in `ConfigMap`; credentials in `Secret`. |
 | Compose startup dependency (`depends_on`) | Readiness model + optional init wait logic | Kubernetes does not use `depends_on`; probes and retries are the control mechanism. |
 | DB volume (`postgres_data`) | `PersistentVolumeClaim` (+ StorageClass) | Keeps DB data across pod restarts/re-schedules. |
@@ -91,8 +91,8 @@ Recommended for Phase 3 manifests:
 ## 🌐 Service exposure translation
 
 For local Minikube validation:
-- Option 1: `kubectl port-forward service/api 8000:8000`
-- Option 2: API `Service` as `NodePort`
+- Option 1: `kubectl port-forward svc/music-platform-api 8000:8000 -n music-platform`
+- Option 2: Override chart value `api.service.type=NodePort` for node-level exposure
 
 For production-style setups (later):
 - `Ingress` + controller for HTTP routing
@@ -102,20 +102,23 @@ For production-style setups (later):
 Helm should parameterize environment differences, not duplicate logic.
 
 Likely chart value groups:
-- `image.repository`, `image.tag`, `image.pullPolicy`
-- `api.replicaCount`, `api.resources`, `api.service.type`, `api.service.port`
-- `database.enabled`, `database.image`, `database.persistence.size`
-- `env` non-sensitive map
-- `secrets` references or generated secrets
+- `api.image.repository`, `api.image.tag`, `api.image.pullPolicy`
+- `api.replicaCount`, `api.resources`, `api.service.type`, `api.service.port`, `api.probes.*`
+- `db.image.repository`, `db.image.tag`, `db.image.pullPolicy`
+- `db.name`, `db.user`, `db.password`, `db.existingSecret`
+- `db.persistence.enabled`, `db.persistence.size`, `db.persistence.storageClass`
+- `db.resources`
 
 Template families to expect:
-- `deployment.yaml` (API)
-- `service.yaml` (API and DB internal service)
-- `statefulset.yaml` (DB)
+- `api-deployment.yaml`
+- `api-service.yaml`
+- `db-statefulset.yaml`
+- `db-service.yaml`
 - `configmap.yaml`
 - `secret.yaml`
-- `pvc.yaml`
-- optional `ingress.yaml`
+- `serviceaccounts.yaml`
+
+If you need generic examples for other projects, treat them as conceptual only and not as this chart's file names/keys.
 
 ## ✅ Phase 2 completion criteria
 

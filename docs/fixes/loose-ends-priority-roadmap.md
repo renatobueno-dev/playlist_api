@@ -180,33 +180,23 @@ Scope:
 - Terraform provider constraint refined to patch-level (`~> 2.38.0`).
 - Startup DB retry environment variables documented in `.env.example`.
 
-## ▶️ Recommended Execution Sequence
+## 🧾 Historical Execution Sequence
 
-Do now:
+The sequence below reflects how remediation was executed (already completed), not a pending task queue.
+
+Execution order used:
 
 1. Step 1 - Namespace consistency
 2. Step 2 - Security defaults
 3. Step 3 - Runtime hardening
+4. Step 4 - Pipeline reproducibility
+5. Step 5 - Terraform posture
+6. Step 6 - DestinationRule and resilience tuning
 
-Do next:
+Optional production extras (not required for Stage 4 mission scope) remain separate:
 
-1. Step 4 - Pipeline reproducibility
-2. Step 5 - Terraform posture
-
-Do last:
-
-1. Step 6 - DestinationRule and resilience tuning
-2. Optional production extras (external secrets, advanced backend/locking patterns)
-
-## 🎯 Immediate Focus
-
-Recommended immediate chain:
-
-1. Namespace coherence
-2. Helm security defaults
-3. Container/runtime hardening
-
-This sequence gives the best checkpoint value per effort while keeping later improvements simpler and safer.
+1. External secrets manager adoption
+2. Advanced Terraform backend/locking patterns
 
 ---
 
