@@ -105,7 +105,7 @@ def remove_song_from_playlist_endpoint(
     playlist_id: int,
     song_id: int,
     session: Session = Depends(get_session),
-) -> Response:
+) -> None:
     playlist = get_playlist_by_id(session, playlist_id)
     if playlist is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=PLAYLIST_NOT_FOUND_DETAIL)
@@ -114,10 +114,5 @@ def remove_song_from_playlist_endpoint(
     if song is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=SONG_NOT_FOUND_DETAIL)
 
-    updated_playlist = remove_song_from_playlist(session, playlist, song)
-    if updated_playlist is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Song is not linked to this playlist",
-        )
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+    remove_song_from_playlist(session, playlist, song)
+    return

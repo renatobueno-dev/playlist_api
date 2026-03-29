@@ -42,10 +42,10 @@ This document defines the complete CRUD route map before implementing the missin
 
 | Operation | Method | Path | Response Schema | Success Status | Error Status |
 | --- | --- | --- | --- | --- | --- |
-| Add song to playlist | `POST` | `/playlists/{playlist_id}/songs/{song_id}` | `PlaylistRead` | `200` | `404` |
-| Remove song from playlist | `DELETE` | `/playlists/{playlist_id}/songs/{song_id}` | `PlaylistRead` | `200` | `404` |
+| Add song to playlist | `POST` | `/playlists/{playlist_id}/songs/{song_id}` | `PlaylistRead` | `201` | `404` |
+| Remove song from playlist | `DELETE` | `/playlists/{playlist_id}/songs/{song_id}` | — | `204` | `404` |
 
-Both endpoints return the full updated `PlaylistRead` object — including the complete `songs` list after the operation. This means the caller always sees the resulting playlist state without needing a separate `GET` request.
+`POST` returns the full updated `PlaylistRead` object — including the complete `songs` list after the operation. This means the caller always sees the resulting playlist state without needing a separate `GET` request. `DELETE` returns no body (`204 No Content`) and is idempotent — a second call returns `204` even if the link no longer exists.
 
 ---
 

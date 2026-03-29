@@ -1,6 +1,6 @@
 # API Reference — Music Platform
 
-> API version: **1.6.0** · Stable endpoint reference. For endpoint planning and implementation decisions, see [crud-endpoint-plan.md](./domain/crud-endpoint-plan.md).
+> API version: **1.6.1** · Stable endpoint reference. For endpoint planning and implementation decisions, see [crud-endpoint-plan.md](./domain/crud-endpoint-plan.md).
 
 ---
 
@@ -45,12 +45,12 @@ When running locally: `http://localhost:8000`
 
 ## 🔗 Playlist–Song relationships
 
-Both endpoints return the full updated `PlaylistRead` object — the complete `songs` list reflects the state after the operation.
+`POST` returns the full updated `PlaylistRead` object — the complete `songs` list reflects the state after the operation. `DELETE` returns no body.
 
 | Operation | Method | Path | Response Schema | Success | Error |
 | --- | --- | --- | --- | --- | --- |
-| Add song to playlist | `POST` | `/playlists/{playlist_id}/songs/{song_id}` | `PlaylistRead` | `200` | `404` |
-| Remove song from playlist | `DELETE` | `/playlists/{playlist_id}/songs/{song_id}` | `PlaylistRead` | `200` | `404` |
+| Add song to playlist | `POST` | `/playlists/{playlist_id}/songs/{song_id}` | `PlaylistRead` | `201` | `404` |
+| Remove song from playlist | `DELETE` | `/playlists/{playlist_id}/songs/{song_id}` | — | `204` | `404` |
 
 ---
 
