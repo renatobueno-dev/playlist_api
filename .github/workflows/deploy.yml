@@ -36,8 +36,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
-        run: python3 -m pip install -r requirements.txt
+      - name: Install runtime and test dependencies
+        run: python3 -m pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Run API contract tests
+        run: python3 -m pytest -q tests
 
       - name: Compile Python modules
         run: python3 -m compileall app
