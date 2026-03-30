@@ -126,7 +126,7 @@ Full reference in [`docs/`](./docs/README.md):
 
 | Topic | Files |
 | --- | --- |
-| Project-wide | [CHANGELOG.md](./CHANGELOG.md) · [ARCHITECTURE.md](./docs/ARCHITECTURE.md) · [INFRA_DECISIONS.md](./docs/INFRA_DECISIONS.md) · [SETUP.md](./docs/SETUP.md) · [QUALITY.md](./docs/QUALITY.md) · [DEVELOPMENT_LOG.md](./docs/DEVELOPMENT_LOG.md) · [DEVELOPMENT_DIARY.md](./docs/DEVELOPMENT_DIARY.md) |
+| Project-wide | [CHANGELOG.md](./CHANGELOG.md) · [ARCHITECTURE.md](./docs/ARCHITECTURE.md) · [INFRA_DECISIONS.md](./docs/INFRA_DECISIONS.md) · [SETUP.md](./docs/SETUP.md) · [QUALITY.md](./docs/QUALITY.md) · [DEVELOPMENT_LOG.md](./docs/DEVELOPMENT_LOG.md) · [DEVELOPMENT_DIARY.md](./docs/DEVELOPMENT_DIARY.md) · [DEVELOPMENT_LOG_RESTART.md](./docs/DEVELOPMENT_LOG_RESTART.md) · [DEVELOPMENT_DIARY_RESTART.md](./docs/DEVELOPMENT_DIARY_RESTART.md) |
 | Domain | [API.md](./docs/API.md) · [domain-scope](./docs/domain/domain-scope.md) · [crud-endpoint-plan](./docs/domain/crud-endpoint-plan.md) |
 | Containers | [docker-guide](./docs/containers/docker-guide.md) · [compose-guide](./docs/containers/compose-guide.md) |
 | Kubernetes | [k8s-concept-map](./docs/kubernetes/k8s-concept-map.md) · [helm-guide](./docs/kubernetes/helm-guide.md) |
