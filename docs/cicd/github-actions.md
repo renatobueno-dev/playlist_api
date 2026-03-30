@@ -26,8 +26,9 @@ Automates validation, build/push, and deployment into a reproducible CI/CD workf
 Validation job:
 
 - Checkout repository with `actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd` (pinned commit).
-- Install Python dependencies.
-- Compile Python modules (`python -m compileall app`).
+- Install runtime and test dependencies (`requirements.txt` + `requirements-dev.txt`).
+- Run API contract tests (`python3 -m pytest -q tests`).
+- Compile Python modules (`python3 -m compileall app`).
 - Build Docker image (validation build).
 - Install Helm and Terraform CLIs.
   - Uses pinned versions and retry-enabled downloads to reduce transient network failures.

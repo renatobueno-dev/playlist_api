@@ -133,12 +133,19 @@ Full reference in [`docs/`](./docs/README.md):
 | Istio | [readiness](./docs/istio/readiness.md) · [traffic](./docs/istio/traffic.md) · [security](./docs/istio/security.md) |
 | CI/CD | [github-actions](./docs/cicd/github-actions.md) |
 | Terraform | [scope-and-boundary](./docs/terraform/scope-and-boundary.md) · [flow-integration](./docs/terraform/flow-integration.md) |
+| Roadmap | [roadmap index](./docs/roadmap/README.md) · [phase 1 step 1 scope](./docs/roadmap/phase-1/step-1-minimum-test-scope.md) · [phase 1 step 2 layer decision](./docs/roadmap/phase-1/step-2-first-test-layer.md) · [phase 1 step 3 test environment](./docs/roadmap/phase-1/step-3-clean-test-environment.md) · [phase 1 step 4 green slice](./docs/roadmap/phase-1/step-4-smallest-green-slice.md) · [phase 1 step 5 songs CRUD](./docs/roadmap/phase-1/step-5-songs-crud-tests.md) · [phase 1 step 6 playlists CRUD](./docs/roadmap/phase-1/step-6-playlists-crud-tests.md) · [phase 1 step 7 relationship tests](./docs/roadmap/phase-1/step-7-playlist-song-relationship-tests.md) · [phase 1 step 8 negative tests](./docs/roadmap/phase-1/step-8-negative-tests.md) · [phase 1 step 9 local stability](./docs/roadmap/phase-1/step-9-local-test-stability.md) · [phase 1 step 10 ci integration](./docs/roadmap/phase-1/step-10-ci-test-integration.md) |
 
 ---
 
 ## Tests
 
-> **Under development.**
+Contract tests are implemented and run locally with:
+
+```bash
+./scripts/verify-local-tests.sh 3
+```
+
+CI also runs API contract tests on pull requests in the validation job (`python3 -m pytest -q tests`).
 
 ---
 
