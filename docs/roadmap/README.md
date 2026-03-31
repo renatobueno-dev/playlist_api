@@ -30,3 +30,9 @@ Each step file should keep a durable structure:
 - `phase-1/step-8-negative-tests.md`
 - `phase-1/step-9-local-test-stability.md`
 - `phase-1/step-10-ci-test-integration.md`
+- `phase-2/step-11-migration-ownership.md`
+- `phase-2/step-12-baseline-migration-strategy.md`
+- `phase-2/step-13-migration-structure.md`
+- `phase-2/step-14-clean-db-upgrade-validation.md`
+- `phase-2/step-15-reduce-create-all-responsibility.md`
+- `phase-2/step-16-document-migration-workflow.md`

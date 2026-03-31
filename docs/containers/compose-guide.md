@@ -18,7 +18,10 @@ Compose must include:
 Commands:
 
 ```bash
-docker compose up -d --build
+docker compose up -d --build db
+export DATABASE_URL=postgresql+psycopg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@localhost:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-music_platform}
+./.venv/bin/alembic upgrade head
+docker compose up -d api
 docker compose ps
 ```
 
@@ -37,6 +40,7 @@ Checkpoint:
 - Both services are running.
 - API can read/write data with DB.
 - Host-to-API mapping (`localhost:8000 -> api:8000`) works.
+- Schema has been applied through Alembic before API startup.
 
 ## ✅ Step E - Validate logs
 

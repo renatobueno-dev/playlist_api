@@ -45,6 +45,16 @@ DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/music_platfor
 | `STARTUP_DB_MAX_RETRIES`   | `20`    | Max attempts to connect on startup  |
 | `STARTUP_DB_RETRY_SECONDS` | `2`     | Seconds between attempts            |
 
+### Migration rule for all environments
+
+Schema evolution is migration-owned.
+
+- startup validates schema; it does not create tables
+- run `alembic upgrade head` before expecting a healthy API startup
+- current GitHub Actions deploy workflow does not run migrations automatically
+
+For complete migration lifecycle rules, see [MIGRATIONS.md](./MIGRATIONS.md).
+
 ---
 
 ## 💻 Local Setup (without Docker)
@@ -59,18 +69,28 @@ DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/music_platfor
 
 2. **Install dependencies**
    ```bash
-   pip install -r requirements.txt
+   pip install -r requirements.txt -r requirements-dev.txt
    ```
 
-3. **Start the server with SQLite** (no PostgreSQL needed)
+3. **Set database URL**
    ```bash
    export DATABASE_URL=sqlite:///./music.db
+   ```
+
+4. **Apply migrations**
+   ```bash
+   ./.venv/bin/alembic upgrade head
+   ```
+
+5. **Start the server**
+   ```bash
    uvicorn app.main:app --reload
    ```
 
-4. **To use PostgreSQL locally** instead, set a PostgreSQL connection string:
+6. **To use PostgreSQL locally** instead, set a PostgreSQL connection string before migrating:
    ```bash
    export DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/music_platform
+   ./.venv/bin/alembic upgrade head
    uvicorn app.main:app --reload
    ```
 
@@ -91,12 +111,23 @@ DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/music_platfor
    cp .env.example .env
    ```
 
-2. **Build and start**
+2. **Start database service**
    ```bash
-   docker compose up --build
+   docker compose up -d db
    ```
 
-3. **Verify startup**
+3. **Run migrations from local virtualenv against Compose database**
+   ```bash
+   export DATABASE_URL=postgresql+psycopg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@localhost:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-music_platform}
+   ./.venv/bin/alembic upgrade head
+   ```
+
+4. **Start API service**
+   ```bash
+   docker compose up -d api
+   ```
+
+5. **Verify startup**
    ```bash
    # Tail logs until "Application startup complete" appears
    docker compose logs -f api
@@ -104,7 +135,7 @@ DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/music_platfor
    curl http://localhost:8000/health
    ```
 
-4. **Tear down** (add `-v` to also remove the database volume)
+6. **Tear down** (add `-v` to also remove the database volume)
    ```bash
    docker compose down
    docker compose down -v   # wipes PostgreSQL data
@@ -131,6 +162,7 @@ API available at: `http://localhost:8000/`
    ```
 
    The default chart path assembles and injects `DATABASE_URL` through `helm/music-platform/templates/secret.yaml`, so you do not need to set it manually for Kubernetes installs unless you are overriding the chart's secret handling.
+   On a fresh database, apply migrations separately before expecting API readiness (`alembic upgrade head` with cluster-reachable DB endpoint).
 
 3. **Forward the API port**
    ```bash
@@ -151,6 +183,7 @@ For Helm values reference, see [`docs/kubernetes/helm-guide.md`](./kubernetes/he
 
 - [API reference](./API.md)
 - [Architecture decisions](./ARCHITECTURE.md)
+- [Migration workflow](./MIGRATIONS.md)
 - [Quality guide](./QUALITY.md)
 - [Development Log](./DEVELOPMENT_LOG.md)
 - [Docker guide](./containers/docker-guide.md)

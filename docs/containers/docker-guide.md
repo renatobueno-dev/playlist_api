@@ -34,11 +34,15 @@ Goal:
 
 Commands:
 
-> `DATABASE_URL` is always required — the app raises `RuntimeError` at startup if it is missing. For standalone container runs, use a writable path such as `/tmp/music.db` (`sqlite:////tmp/music.db`).
+> `DATABASE_URL` is always required. Startup now validates schema and does not create tables automatically, so migrations must be applied before starting API runtime.
 
 ```bash
+DATABASE_URL=sqlite:///./stepb_music.db ./.venv/bin/alembic upgrade head
 docker build -t music-platform-api:stepb .
-docker run --rm -d --name stepb-api-test -p 8000:8000 -e DATABASE_URL=sqlite:////tmp/music.db music-platform-api:stepb
+docker run --rm -d --name stepb-api-test -p 8000:8000 \
+  -v "$(pwd)/stepb_music.db:/tmp/music.db" \
+  -e DATABASE_URL=sqlite:////tmp/music.db \
+  music-platform-api:stepb
 ```
 
 Validation:
@@ -49,6 +53,7 @@ curl http://127.0.0.1:8000/
 curl -I http://127.0.0.1:8000/docs
 docker logs stepb-api-test
 docker stop stepb-api-test
+rm -f stepb_music.db
 ```
 
 Checkpoint:
@@ -64,13 +69,18 @@ Goal:
 Recommended checks:
 
 ```bash
-docker run --rm -d --name stepc-api-test -p 8000:8000 -e DATABASE_URL=sqlite:////tmp/music.db music-platform-api:stepb
+DATABASE_URL=sqlite:///./stepc_music.db ./.venv/bin/alembic upgrade head
+docker run --rm -d --name stepc-api-test -p 8000:8000 \
+  -v "$(pwd)/stepc_music.db:/tmp/music.db" \
+  -e DATABASE_URL=sqlite:////tmp/music.db \
+  music-platform-api:stepb
 docker inspect -f '{{.State.Running}}' stepc-api-test
 docker inspect -f '{{.RestartCount}}' stepc-api-test
 docker logs --tail 100 stepc-api-test
 curl http://127.0.0.1:8000/health
 curl http://127.0.0.1:8000/docs
 docker stop stepc-api-test
+rm -f stepc_music.db
 ```
 
 Checkpoint:

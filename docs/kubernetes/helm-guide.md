@@ -89,6 +89,11 @@ helm template music-platform helm/music-platform
 
 ## ☁️ Install to Minikube
 
+Schema prerequisite:
+
+- This chart does not execute Alembic migrations automatically.
+- On a fresh database, schema must be migrated separately before API pods can become reliably healthy.
+
 ```bash
 minikube image load music-platform-api:1.6.1
 helm upgrade --install music-platform helm/music-platform --namespace music-platform --create-namespace
@@ -104,10 +109,13 @@ This example matches the current chart default in `values.yaml` (`api.image.tag:
 - command line override:
   - `helm upgrade --install ... --set api.image.tag=<tag>`
 
+For migration ownership and rollout flow details, see [MIGRATIONS.md](../MIGRATIONS.md).
+
 ---
 
 ## 🔗 Related documents
 
 - [Kubernetes concept map](./k8s-concept-map.md)
+- [Migration workflow](../MIGRATIONS.md)
 - [Istio security](../istio/security.md)
 - [Architecture decisions](../ARCHITECTURE.md)

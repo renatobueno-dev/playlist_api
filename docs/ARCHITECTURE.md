@@ -102,9 +102,48 @@ Silent replacement of existing links without explicit intent would be destructiv
 
 `connect_args={"check_same_thread": False}` is applied only when the URL starts with `sqlite`. This is necessary for SQLAlchemy's sync driver in FastAPI's threaded request handling.
 
-### No Alembic — `create_all` only
+### Migration-owned schema evolution
 
-Schema is initialised via `Base.metadata.create_all()`. Alembic migration tracking is under development.
+Runtime startup no longer mutates schema with `create_all()`.
+
+Current ownership model:
+
+- Alembic migration files are the schema evolution authority
+- startup is limited to connectivity retry and required-table validation
+- missing schema causes explicit startup failure with migration guidance
+
+This removes long-term dual ownership between runtime startup mutation and migration history.
+
+### Baseline migration strategy (first tracked state)
+
+The first Alembic revision will formalize the current SQLAlchemy schema as the baseline contract (`songs`, `playlists`, `playlist_songs` with existing constraints/defaults).
+
+Environment strategy:
+
+- fresh databases: build schema through migration upgrade flow
+- existing databases already created by startup flow: stamp baseline revision, then apply future revisions normally
+
+To keep baseline history clean, model-structure changes should be frozen while baseline capture is introduced.
+
+### Migration framework home introduced
+
+The repository now has a dedicated migration structure:
+
+- `alembic.ini` as Alembic configuration entrypoint
+- `migrations/env.py` bound to `app.models.Base.metadata`
+- `migrations/versions/` as schema history location
+
+This structure establishes where schema history will live and how future DB changes are expected to be tracked.
+
+### Clean upgrade flow validated
+
+Baseline migration revision `abff2336451a` was generated and applied successfully on a clean database during Phase 2 Step 14.
+
+Validation proved:
+
+- fresh environment can reach schema via `alembic upgrade head`
+- resulting schema includes `songs`, `playlists`, `playlist_songs`
+- migration head is recorded in `alembic_version`
 
 ---
 
@@ -122,13 +161,14 @@ A domain-specific exception was created instead of returning `None` or raising a
 
 ## 🚀 Startup Resilience
 
-`main.py` retries `Base.metadata.create_all()` on startup with configurable attempts and delay:
+`main.py` retries database connectivity on startup, then validates required tables (`songs`, `playlists`, `playlist_songs`) before serving requests.
 
-| Variable                  | Default | Purpose                              |
-|---------------------------|---------|--------------------------------------|
-| `STARTUP_DB_MAX_RETRIES`  | `20`    | Maximum connection attempts          |
-| `STARTUP_DB_RETRY_SECONDS`| `2`     | Wait between attempts (seconds)      |
+| Variable                  | Default | Purpose                                   |
+|---------------------------|---------|-------------------------------------------|
+| `STARTUP_DB_MAX_RETRIES`  | `20`    | Maximum database connection attempts      |
+| `STARTUP_DB_RETRY_SECONDS`| `2`     | Wait between connection attempts (seconds)|
 
+Schema mutations are not performed in application startup anymore; migrations must run before API start (`alembic upgrade head`).  
 `depends_on: condition: service_healthy` in Docker Compose reduces the race window but does not fully eliminate it — the retry loop is the final safety net. In Kubernetes, startup behaviour is also governed by Helm probe values (`api.probes.startup` in `values.yaml`).
 
 ---
@@ -140,6 +180,7 @@ A domain-specific exception was created instead of returning `None` or raising a
 ## 🔗 Related documents
 
 - [Domain scope and endpoint plan](./domain/domain-scope.md)
+- [Migration workflow](./MIGRATIONS.md)
 - [INFRA_DECISIONS.md](./INFRA_DECISIONS.md)
 - [Kubernetes concept map](./kubernetes/k8s-concept-map.md)
 - [Development Log](./DEVELOPMENT_LOG.md)

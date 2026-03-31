@@ -10,6 +10,7 @@
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | Data model, layer structure, and application-level design decisions |
 | [INFRA_DECISIONS.md](./INFRA_DECISIONS.md) | Kubernetes, Istio, Terraform, and CI/CD design decisions |
 | [SETUP.md](./SETUP.md) | Environment variables and local/Docker/Kubernetes setup |
+| [MIGRATIONS.md](./MIGRATIONS.md) | Migration lifecycle source of truth: ownership, baseline, and environment workflow differences |
 | [QUALITY.md](./QUALITY.md) | Testing guide and CI overview |
 | [API.md](./API.md) | Stable API endpoint reference with schemas and status codes |
 | [DEVELOPMENT_LOG.md](./DEVELOPMENT_LOG.md) | Development journey — reasoning, decisions, and corrections per stage |
@@ -74,6 +75,12 @@
 | [step-8-negative-tests.md](./roadmap/phase-1/step-8-negative-tests.md) | Phase 1 Step 8 focused negative-path coverage for invalid payloads, missing resources, and invalid relationship identifiers |
 | [step-9-local-test-stability.md](./roadmap/phase-1/step-9-local-test-stability.md) | Phase 1 Step 9 local repeatability baseline with clean-state multi-run verification |
 | [step-10-ci-test-integration.md](./roadmap/phase-1/step-10-ci-test-integration.md) | Phase 1 Step 10 CI validation extension to execute API contract tests on pull requests |
+| [step-11-migration-ownership.md](./roadmap/phase-2/step-11-migration-ownership.md) | Phase 2 Step 11 migration ownership definition before introducing Alembic tooling |
+| [step-12-baseline-migration-strategy.md](./roadmap/phase-2/step-12-baseline-migration-strategy.md) | Phase 2 Step 12 baseline strategy defining the first tracked schema state and rollout path |
+| [step-13-migration-structure.md](./roadmap/phase-2/step-13-migration-structure.md) | Phase 2 Step 13 Alembic framework structure introduction and migration home setup |
+| [step-14-clean-db-upgrade-validation.md](./roadmap/phase-2/step-14-clean-db-upgrade-validation.md) | Phase 2 Step 14 proof that a clean database can be rebuilt through migration upgrade flow |
+| [step-15-reduce-create-all-responsibility.md](./roadmap/phase-2/step-15-reduce-create-all-responsibility.md) | Phase 2 Step 15 removal of startup `create_all` authority in favor of migration-first schema evolution |
+| [step-16-document-migration-workflow.md](./roadmap/phase-2/step-16-document-migration-workflow.md) | Phase 2 Step 16 stable migration workflow documentation and environment-flow clarification |
 
 ## 🔧 Post-checkpoint fixes
 

@@ -57,6 +57,12 @@ Deploy job:
   - `k8s/istio/security-policies.yaml`
 - Verify deployment and policy resources using `kubectl rollout status` and `kubectl get`.
 
+Migration behavior:
+
+- Current deploy workflow does **not** run `alembic upgrade head`.
+- Deployment assumes the target database is already migrated to the expected revision.
+- If schema is missing/outdated, API pods may fail startup schema validation until migrations are applied.
+
 Deploy secret guard:
 
 - Deploy job runs a precheck step.
@@ -137,5 +143,6 @@ Implemented fix in workflow:
 ## 🔗 Related documents
 
 - [Terraform integration flow](../terraform/flow-integration.md)
+- [Migration workflow](../MIGRATIONS.md)
 - [Quality guide](../QUALITY.md)
 - [Architecture decisions](../ARCHITECTURE.md)
