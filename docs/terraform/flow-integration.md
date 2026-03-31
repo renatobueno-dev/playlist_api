@@ -10,6 +10,7 @@ Integrates Terraform as a prerequisite step in the full delivery sequence.
 
 1. Terraform foundation
    - Manage namespace baseline (`music-platform`) and required labels (Istio injection plus Pod Security Standards labels).
+   - Manage namespace guardrails (`ResourceQuota` and `LimitRange`) for platform-level boundaries.
 2. Runtime secret verification
    - Verify external Kubernetes Secret exists in target namespace and exposes required keys for API/DB.
 3. Helm application release
@@ -32,7 +33,7 @@ The workflow now includes Terraform in both paths:
 2. Deploy job:
    - `terraform init`
    - optional `terraform import` for pre-existing namespace
-   - `terraform apply` for baseline resources
+   - `terraform apply` for baseline resources and namespace guardrails
    - verify runtime DB secret exists and has required keys (`DATABASE_URL`, `POSTGRES_PASSWORD`)
    - Helm deploy
    - Istio manifest apply
@@ -65,4 +66,5 @@ Importing first reconciles the existing namespace into Terraform state so `apply
 ## 🔗 Related documents
 
 - [Terraform scope and boundary](./scope-and-boundary.md)
+- [Terraform state management policy](./state-management-policy.md)
 - [GitHub Actions guide](../cicd/github-actions.md)

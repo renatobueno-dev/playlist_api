@@ -38,3 +38,5 @@ Each step file should keep a durable structure:
 - `phase-2/step-16-document-migration-workflow.md`
 - `phase-3/step-17-secret-ownership-boundary.md`
 - `phase-3/step-18-secret-flow-alignment.md`
+- `phase-4/step-19-state-management-policy.md`
+- `phase-5/step-20-platform-guardrails-expansion.md`

@@ -20,6 +20,7 @@ Use Terraform as the infrastructure-definition layer for reproducible platform p
 2. Platform-level prerequisites
    - Cluster resources that must exist before app deployment starts.
    - Shared environment-level settings consumed by deployment automation.
+   - Baseline namespace guardrails (`ResourceQuota` and `LimitRange`) for predictable platform boundaries.
 
 **Terraform does not own:**
 
@@ -35,6 +36,8 @@ Use Terraform as the infrastructure-definition layer for reproducible platform p
 |----------|-------|-----------|
 | `music-platform` namespace | Terraform | Long-lived infrastructure prerequisite |
 | Namespace labels (`istio-injection=enabled` + Pod Security Standards labels) | Terraform | Platform baseline, not app config |
+| Namespace `ResourceQuota` baseline | Terraform | Platform guardrail to prevent uncontrolled namespace growth |
+| Namespace `LimitRange` baseline | Terraform | Platform guardrail for default container requests/limits |
 | API Deployment/Service | Helm | Application release packaging |
 | DB StatefulSet/Service | Helm | Application release packaging |
 | Image tag / replica count | Helm + CI/CD | Per-release values |
@@ -54,8 +57,11 @@ The minimum Terraform-managed infrastructure in this project is:
 2. Namespace baseline labels:
    - `istio-injection=enabled`
    - Pod Security Standards labels: `pod-security.kubernetes.io/enforce`, `warn`, `audit`, `enforce-version`, `warn-version`, and `audit-version`
+3. Baseline namespace guardrails (enabled by default):
+   - `ResourceQuota` (`<namespace>-baseline-quota`)
+   - `LimitRange` (`<namespace>-baseline-limits`)
 
-These labels are driven by Terraform inputs such as `pod_security_level` and `pod_security_version`. No workload resources are included in the minimum scope.
+These labels and guardrails are driven by Terraform inputs such as `pod_security_level`, `pod_security_version`, `resource_quota_hard`, and `limit_range_default*`. No workload resources are included in the minimum scope.
 
 **Why this is the safest minimum:**
 - Infrastructure-level, not app-release-level.
@@ -73,6 +79,7 @@ These labels are driven by Terraform inputs such as `pod_security_level` and `po
 
 ## 🔗 Related documents
 
+- [Terraform state management policy](./state-management-policy.md)
 - [Terraform integration flow](./flow-integration.md)
 - [Helm guide](../kubernetes/helm-guide.md)
 - [GitHub Actions guide](../cicd/github-actions.md)

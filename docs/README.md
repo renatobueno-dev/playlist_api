@@ -60,6 +60,7 @@
 | --- | --- |
 | [scope-and-boundary.md](./terraform/scope-and-boundary.md) | Terraform ownership boundary, Helm separation matrix, and minimum locked scope |
 | [flow-integration.md](./terraform/flow-integration.md) | Integrating Terraform into the full Helm/Istio/CI pipeline |
+| [state-management-policy.md](./terraform/state-management-policy.md) | Terraform state usage policy: single-user vs shared execution, locking expectations, and recovery thinking |
 
 ## 🧭 Roadmap
 
@@ -84,6 +85,8 @@
 | [step-16-document-migration-workflow.md](./roadmap/phase-2/step-16-document-migration-workflow.md) | Phase 2 Step 16 stable migration workflow documentation and environment-flow clarification |
 | [step-17-secret-ownership-boundary.md](./roadmap/phase-3/step-17-secret-ownership-boundary.md) | Phase 3 Step 17 secret ownership boundary definition across local, cluster, and CI delivery paths |
 | [step-18-secret-flow-alignment.md](./roadmap/phase-3/step-18-secret-flow-alignment.md) | Phase 3 Step 18 deployment-flow alignment across Terraform baseline, CI orchestration, and Helm runtime secret consumption |
+| [step-19-state-management-policy.md](./roadmap/phase-4/step-19-state-management-policy.md) | Phase 4 Step 19 Terraform state-management policy for collaboration expectations, locking discipline, and recovery guidance |
+| [step-20-platform-guardrails-expansion.md](./roadmap/phase-5/step-20-platform-guardrails-expansion.md) | Phase 5 Step 20 namespace/platform guardrail expansion with Terraform-managed `ResourceQuota` and `LimitRange` baseline |
 
 ## 🔧 Post-checkpoint fixes
 
