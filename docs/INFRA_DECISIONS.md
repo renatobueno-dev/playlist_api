@@ -74,9 +74,36 @@ The project has a `terraform/` directory at the root. The default Terraform inst
 
 ---
 
+## 🔐 Secret Ownership Boundary
+
+Step 17 defines explicit ownership boundaries for secret delivery:
+
+- local/compose credentials are developer-managed
+- Kubernetes shared environments should use externally injected Secrets (`db.existingSecret`)
+- chart-managed secret generation is fallback for isolated/demo environments only
+- CI secrets (`KUBE_CONFIG_DATA`) are repository secret-store managed
+
+This keeps secret origin, injection, and rotation responsibilities clear across layers.
+
+Detailed policy: [`SECRETS_OWNERSHIP.md`](./SECRETS_OWNERSHIP.md)
+
+### Step 18 deployment alignment
+
+Step 18 aligns CI/CD with that boundary:
+
+- deploy verifies an external runtime Secret exists in the target namespace
+- deploy validates required keys (`DATABASE_URL` and `POSTGRES_PASSWORD`)
+- Helm deploy is forced onto external-secret mode via `--set db.existingSecret=<name>`
+- Terraform remains limited to namespace baseline; it does not own app runtime secrets
+
+This removes ambiguity between chart-generated fallback and shared-environment deployment behavior.
+
+---
+
 ## 🔗 Related documents
 
 - [Application architecture decisions](./ARCHITECTURE.md)
+- [Secrets ownership boundary](./SECRETS_OWNERSHIP.md)
 - [Kubernetes concept map](./kubernetes/k8s-concept-map.md)
 - [Helm guide](./kubernetes/helm-guide.md)
 - [Istio traffic management](./istio/traffic.md)

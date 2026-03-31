@@ -34,6 +34,8 @@ Validation job:
   - Uses pinned versions and retry-enabled downloads to reduce transient network failures.
 - Run `helm lint`.
 - Render chart with `helm template`.
+- Render chart with external-secret mode:
+  - `helm template ... --set db.existingSecret=runtime-db-secret`
 - Run Terraform checks:
   - `terraform fmt -check`
   - `terraform init -backend=false`
@@ -51,11 +53,22 @@ Deploy job:
   - `terraform init`
   - optional `terraform import` for pre-existing namespace
   - `terraform apply` for namespace baseline and labels
-- Run `helm upgrade --install` with image repo/tag override.
+- Verify runtime DB secret exists in target namespace and includes:
+  - `DATABASE_URL`
+  - `POSTGRES_PASSWORD`
+- Run `helm upgrade --install` with:
+  - image repo/tag override
+  - `--set db.existingSecret=<runtime-secret-name>`
 - Apply Istio manifests:
   - `k8s/istio/traffic-management.yaml`
   - `k8s/istio/security-policies.yaml`
 - Verify deployment and policy resources using `kubectl rollout status` and `kubectl get`.
+
+Runtime secret ownership note:
+
+- GitHub Actions provides deploy access (`KUBE_CONFIG_DATA`) and orchestration only.
+- Runtime DB credentials are not injected from GitHub repository secrets.
+- Runtime credentials must exist in-cluster through the external secret referenced by `db.existingSecret`.
 
 Migration behavior:
 
@@ -86,15 +99,23 @@ Deploy secret guard:
    `Settings → Secrets and variables → Actions → New repository secret`
 
    If the secret is absent, deploy steps are skipped with a notice — see "Deploy secret guard" above.
-2. Workflow permissions:
+2. Repository variable (optional):
+   - `DB_EXISTING_SECRET_NAME`: runtime Kubernetes Secret name consumed by Helm deploy.
+   - Default if omitted: `music-platform-secret`.
+3. Cluster runtime secret prerequisite:
+   - The secret referenced by `DB_EXISTING_SECRET_NAME` must exist in deploy namespace.
+   - Required keys:
+     - `DATABASE_URL`
+     - `POSTGRES_PASSWORD`
+4. Workflow permissions:
    - `packages: write` for pushing to GHCR.
-3. Cluster prerequisites:
+5. Cluster prerequisites:
    - Istio installed and healthy.
    - Namespace and resources allowed by cluster RBAC.
-4. Action runtime compatibility:
+6. Action runtime compatibility:
    - Workflow sets `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true`.
    - Helm/Terraform setup is handled by CLI steps to reduce dependency on deprecated Node.js 20 actions.
-5. Tooling stability:
+7. Tooling stability:
    - Workflow pins CLI versions (`kubectl`, `helm`, `terraform`) and uses retry flags for download commands.
 
 ## 📊 Success and failure signals in logs
@@ -112,6 +133,8 @@ Failure indicators:
 
 - Missing secret:
   - Deploy skipped notice: `Skipping deploy because KUBE_CONFIG_DATA is not configured.`
+- Missing runtime DB secret:
+  - Deploy fails before Helm with clear `::error::` log and expected secret/key names.
 - Image push failures from GHCR auth/permissions.
 - Helm upgrade failures (template, chart, or kube access issues).
 - Terraform failures (provider init/import/apply errors).

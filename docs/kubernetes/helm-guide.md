@@ -37,7 +37,7 @@ helm/music-platform/
 - `templates/api-*.yaml`: API runtime and service exposure.
 - `templates/db-*.yaml`: PostgreSQL runtime and service identity.
 - `templates/configmap.yaml`: non-sensitive DB configuration.
-- `templates/secret.yaml`: sensitive values, including `DATABASE_URL`.
+- `templates/secret.yaml`: chart-managed runtime secret fallback (including `DATABASE_URL` and `POSTGRES_PASSWORD`) for isolated/demo environments.
 - `templates/serviceaccounts.yaml`: dedicated service accounts for the API and DB workloads. Identity names are defined in [security.md](../istio/security.md).
 - `templates/NOTES.txt`: post-install access instructions.
 
@@ -93,6 +93,8 @@ Schema prerequisite:
 
 - This chart does not execute Alembic migrations automatically.
 - On a fresh database, schema must be migrated separately before API pods can become reliably healthy.
+- For shared environments, prefer `db.existingSecret` so secret values are externally owned instead of chart-generated.
+- CI deploy flow enforces this shared-environment path by setting `db.existingSecret` to a pre-created secret name.
 
 ```bash
 minikube image load music-platform-api:1.6.1
@@ -117,5 +119,6 @@ For migration ownership and rollout flow details, see [MIGRATIONS.md](../MIGRATI
 
 - [Kubernetes concept map](./k8s-concept-map.md)
 - [Migration workflow](../MIGRATIONS.md)
+- [Secrets ownership boundary](../SECRETS_OWNERSHIP.md)
 - [Istio security](../istio/security.md)
 - [Architecture decisions](../ARCHITECTURE.md)

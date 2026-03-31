@@ -55,6 +55,18 @@ Schema evolution is migration-owned.
 
 For complete migration lifecycle rules, see [MIGRATIONS.md](./MIGRATIONS.md).
 
+### Secret ownership rule for all environments
+
+Secret handling is ownership-driven:
+
+- local/compose: developer-managed values
+- Kubernetes shared environments: prefer pre-created external Secret with `db.existingSecret`
+- chart-managed secret generation: fallback for isolated/demo environments
+- CI deploy credentials: GitHub repository secrets (`KUBE_CONFIG_DATA`)
+- GitHub Actions does not inject runtime DB credentials; deploy expects runtime DB secret to exist in-cluster
+
+Full boundary policy: [SECRETS_OWNERSHIP.md](./SECRETS_OWNERSHIP.md).
+
 ---
 
 ## 💻 Local Setup (without Docker)
@@ -161,7 +173,22 @@ API available at: `http://localhost:8000/`
      --create-namespace
    ```
 
-   The default chart path assembles and injects `DATABASE_URL` through `helm/music-platform/templates/secret.yaml`, so you do not need to set it manually for Kubernetes installs unless you are overriding the chart's secret handling.
+   The default chart path assembles and injects `DATABASE_URL` through `helm/music-platform/templates/secret.yaml`.
+   For shared environments, prefer an externally managed secret and pass it explicitly:
+
+   ```bash
+   kubectl create secret generic music-platform-secret \
+     --namespace music-platform \
+     --from-literal=POSTGRES_PASSWORD='<strong-password>' \
+     --from-literal=DATABASE_URL='postgresql+psycopg://postgres:<strong-password>@music-platform-db:5432/music_platform'
+
+   helm upgrade --install music-platform ./helm/music-platform \
+     --namespace music-platform \
+     --create-namespace \
+     --set db.existingSecret=music-platform-secret
+   ```
+
+   In CI deploy, this shared-environment path is enforced by default (`DB_EXISTING_SECRET_NAME`, default `music-platform-secret`).
    On a fresh database, apply migrations separately before expecting API readiness (`alembic upgrade head` with cluster-reachable DB endpoint).
 
 3. **Forward the API port**
@@ -183,6 +210,7 @@ For Helm values reference, see [`docs/kubernetes/helm-guide.md`](./kubernetes/he
 
 - [API reference](./API.md)
 - [Architecture decisions](./ARCHITECTURE.md)
+- [Secrets ownership boundary](./SECRETS_OWNERSHIP.md)
 - [Migration workflow](./MIGRATIONS.md)
 - [Quality guide](./QUALITY.md)
 - [Development Log](./DEVELOPMENT_LOG.md)

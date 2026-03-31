@@ -15,6 +15,7 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
   RELEASE_NAME: music-platform
   NAMESPACE: music-platform
+  DB_EXISTING_SECRET_NAME: ${{ vars.DB_EXISTING_SECRET_NAME || 'music-platform-secret' }}
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/music-platform-api
   HELM_VERSION: v3.15.4
   TERRAFORM_VERSION: 1.6.6
@@ -70,6 +71,11 @@ jobs:
 
       - name: Helm template render
         run: helm template music-platform helm/music-platform >/tmp/rendered.yaml
+
+      - name: Helm template render (external secret mode)
+        run: |
+          helm template music-platform helm/music-platform \
+            --set db.existingSecret=runtime-db-secret >/tmp/rendered-external-secret.yaml
 
       - name: Render Istio manifests with workflow namespace
         run: ./scripts/render-istio-manifests.sh >/tmp/istio-rendered.yaml
@@ -174,6 +180,28 @@ jobs:
             -var="kubeconfig_path=${HOME}/.kube/config" \
             -var="namespace_name=${NAMESPACE}"
 
+      - name: Verify external DB secret for deploy
+        if: steps.precheck.outputs.ready == 'true'
+        run: |
+          if ! kubectl get secret "${DB_EXISTING_SECRET_NAME}" -n "${NAMESPACE}" >/dev/null 2>&1; then
+            echo "::error::Required secret '${DB_EXISTING_SECRET_NAME}' was not found in namespace '${NAMESPACE}'."
+            echo "::error::Create it with keys DATABASE_URL and POSTGRES_PASSWORD before running deploy."
+            exit 1
+          fi
+
+          missing_keys=""
+          for key in DATABASE_URL POSTGRES_PASSWORD; do
+            value="$(kubectl get secret "${DB_EXISTING_SECRET_NAME}" -n "${NAMESPACE}" -o "jsonpath={.data['${key}']}")"
+            if [ -z "${value}" ]; then
+              missing_keys="${missing_keys} ${key}"
+            fi
+          done
+
+          if [ -n "${missing_keys}" ]; then
+            echo "::error::Secret '${DB_EXISTING_SECRET_NAME}' is missing required keys:${missing_keys}"
+            exit 1
+          fi
+
       - name: Deploy Helm release
         if: steps.precheck.outputs.ready == 'true'
         run: |
@@ -181,7 +209,8 @@ jobs:
             --namespace "${NAMESPACE}" \
             --create-namespace \
             --set api.image.repository="${IMAGE_NAME}" \
-            --set api.image.tag="${GITHUB_SHA}"
+            --set api.image.tag="${GITHUB_SHA}" \
+            --set db.existingSecret="${DB_EXISTING_SECRET_NAME}"
 
       - name: Apply Istio traffic and security policies
         if: steps.precheck.outputs.ready == 'true'
