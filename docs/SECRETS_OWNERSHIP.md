@@ -4,14 +4,14 @@ This document defines who owns secrets in each environment and which layer is al
 
 ---
 
-## 🎯 Step 17 decision
+## 🎯 Current ownership decision
 
 Secret delivery ownership is explicitly split by environment:
 
 - **Local development / Docker Compose:** developer-managed secrets (local `.env` and shell environment)
 - **Kubernetes shared environments:** externally injected Kubernetes Secret is preferred owner
 - **Helm chart-generated Secret:** allowed as fallback for non-shared/demo environments only
-- **Controller-synced external manager:** not implemented yet in this repository (planned later)
+- **Controller-synced external manager:** optional later enhancement, not part of the current implementation
 
 This keeps boundary clear while remaining compatible with current chart capabilities (`db.existingSecret` and chart-managed fallback).
 
@@ -67,7 +67,7 @@ This keeps boundary clear while remaining compatible with current chart capabili
 
 ---
 
-## 🔄 Step 18 flow alignment (Helm + Terraform + CI/CD)
+## 🔄 Current deploy flow alignment (Helm + Terraform + CI/CD)
 
 Shared-environment deploy flow is now aligned with this policy:
 
@@ -92,10 +92,10 @@ Current behavior in this repository:
 
 ---
 
-## 🚧 Out of scope for Step 17
+## 🚧 Optional later work
 
-- No external secret controller integration is added in this step.
-- No Vault/SOPS/External Secrets Operator sync flow is implemented yet.
+- No external secret controller integration is implemented in this repository yet.
+- No Vault/SOPS/External Secrets Operator sync flow is part of the current required implementation.
 
 ---
 

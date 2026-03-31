@@ -1,6 +1,6 @@
 # 🧭 Roadmap Execution Guides
 
-This directory stores execution guides for the current roadmap cycle.
+This directory stores the execution record for the roadmap cycle that was completed in this repository.
 
 Each step file should keep a durable structure:
 
@@ -18,7 +18,7 @@ Each step file should keep a durable structure:
 - `phase-4/`: Terraform state/locking maturity
 - `phase-5/`: namespace and platform governance
 
-## ✅ Current tracked steps
+## ✅ Completed tracked steps
 
 - `phase-1/step-1-minimum-test-scope.md`
 - `phase-1/step-2-first-test-layer.md`

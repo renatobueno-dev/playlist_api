@@ -1,6 +1,6 @@
 # Loose Ends Priority Roadmap
 
-> Prioritized remediation plan for confirmed repository loose ends. Each step below links to a dedicated implementation file with problem, goal, and validation details.
+> Historical remediation record for confirmed repository loose ends. Each step below links to a dedicated implementation file with problem, goal, and validation details.
 
 ---
 

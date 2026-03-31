@@ -87,13 +87,13 @@ Recovery principle: restore Terraform as source of truth, not ad hoc manual patc
 
 ---
 
-## ✅ Completion criteria for Step 19
+## ✅ Current policy outcome
 
-Step 19 is satisfied when:
+This repository currently treats Terraform state with the following baseline:
 
-1. State writer expectations are clear for local vs shared environments.
-2. Locking behavior is treated as an operational policy, not a hidden implementation detail.
-3. Basic recovery paths are documented for lock/conflict/drift conditions.
+1. State writer expectations are explicit for local vs shared environments.
+2. Locking behavior is handled as an operational policy, not a hidden implementation detail.
+3. Basic recovery paths are documented for lock, conflict, and drift conditions.
 4. The policy is linked from Terraform and roadmap docs for discoverability.
 
 ---

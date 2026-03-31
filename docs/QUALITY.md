@@ -8,6 +8,8 @@ This document covers the testing strategy and CI pipeline overview.
 
 ## 🧪 Tests
 
+The API contract test suite is part of the implemented project baseline, not an optional follow-up.
+
 Contract tests are implemented for:
 
 - root and health availability
@@ -15,6 +17,12 @@ Contract tests are implemented for:
 - playlists CRUD behavior
 - playlist-song relationship behavior
 - focused negative-path contract validation
+
+Test execution is intentionally isolated from the normal runtime path:
+
+- `tests/conftest.py` forces a disposable SQLite `DATABASE_URL`
+- each test run resets schema state for repeatable results
+- local runtime database state is not reused by the test suite
 
 Local repeatability check:
 

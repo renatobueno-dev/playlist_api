@@ -67,7 +67,7 @@
 
 | File | Description |
 | --- | --- |
-| [roadmap/README.md](./roadmap/README.md) | Active roadmap execution index and phase-folder conventions |
+| [roadmap/README.md](./roadmap/README.md) | Roadmap implementation index and phase-folder conventions |
 | [step-1-minimum-test-scope.md](./roadmap/phase-1/step-1-minimum-test-scope.md) | Phase 1 Step 1 boundary for the first minimum API contract test surface |
 | [step-2-first-test-layer.md](./roadmap/phase-1/step-2-first-test-layer.md) | Phase 1 Step 2 decision that API contract behavior is the first testing layer |
 | [step-3-clean-test-environment.md](./roadmap/phase-1/step-3-clean-test-environment.md) | Phase 1 Step 3 setup for repeatable, isolated, and disposable local test execution |

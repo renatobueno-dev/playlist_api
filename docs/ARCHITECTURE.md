@@ -114,18 +114,18 @@ Current ownership model:
 
 This removes long-term dual ownership between runtime startup mutation and migration history.
 
-### Baseline migration strategy (first tracked state)
+### Baseline migration strategy
 
-The first Alembic revision will formalize the current SQLAlchemy schema as the baseline contract (`songs`, `playlists`, `playlist_songs` with existing constraints/defaults).
+Baseline revision `abff2336451a` formalizes the current SQLAlchemy schema as the tracked starting contract (`songs`, `playlists`, `playlist_songs` with existing constraints/defaults).
 
 Environment strategy:
 
 - fresh databases: build schema through migration upgrade flow
-- existing databases already created by startup flow: stamp baseline revision, then apply future revisions normally
+- existing databases already created by the old startup-owned flow: stamp the baseline revision once, then apply future revisions normally
 
-To keep baseline history clean, model-structure changes should be frozen while baseline capture is introduced.
+This keeps the migration history anchored to one explicit baseline instead of mixing old startup-created state with future tracked revisions.
 
-### Migration framework home introduced
+### Migration framework home
 
 The repository now has a dedicated migration structure:
 
@@ -137,7 +137,7 @@ This structure establishes where schema history will live and how future DB chan
 
 ### Clean upgrade flow validated
 
-Baseline migration revision `abff2336451a` was generated and applied successfully on a clean database during Phase 2 Step 14.
+Baseline migration revision `abff2336451a` has been generated and applied successfully on a clean database.
 
 Validation proved:
 

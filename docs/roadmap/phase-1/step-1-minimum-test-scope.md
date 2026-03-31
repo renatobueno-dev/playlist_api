@@ -2,8 +2,8 @@
 
 ## 📌 Context
 
-The current baseline still marks tests as under development in `README.md` and `docs/QUALITY.md`.
-The validation workflow in `.github/workflows/deploy.yml` currently focuses on build and infrastructure checks.
+When this step was originally defined, `README.md` and `docs/QUALITY.md` still described tests as under development.
+At that point, `.github/workflows/deploy.yml` focused on build and infrastructure checks rather than API behavior validation.
 
 ## 🎯 Scope decision
 

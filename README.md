@@ -11,9 +11,11 @@
 
 ## 📚 Purpose
 
-Educational project focused on consolidating real backend and deployment practices with FastAPI. Domain: `Song` + `Playlist` with many-to-many through `playlist_songs`, built across 4 progressive infrastructure stages: local → Docker/Compose → Kubernetes/Helm → Istio/Terraform/CI.
+Implemented educational backend project focused on consolidating real API, database, and deployment practices with FastAPI. Domain: `Song` + `Playlist` with many-to-many through `playlist_songs`, built across 4 progressive infrastructure stages: local → Docker/Compose → Kubernetes/Helm → Istio/Terraform/CI.
 
 - REST API with a simple but representative domain (songs and playlists)
+- Migration-managed schema lifecycle with Alembic baseline and tracked upgrade flow
+- Contract-tested request/response behavior for health, songs, playlists, and relationship endpoints
 - Kubernetes workload management with Helm and Istio service mesh
 - Infrastructure as code with Terraform
 - Automated CI/CD pipeline with GitHub Actions
@@ -59,9 +61,13 @@ This repository is for study. Before using in production:
 │   ├── traffic-management.yaml
 │   └── security-policies.yaml
 ├── scripts/                       # Deployment helpers
-│   └── render-istio-manifests.sh
+│   ├── render-istio-manifests.sh
+│   └── verify-local-tests.sh
 ├── terraform/                     # Environment foundation
 │   ├── main.tf / variables.tf / outputs.tf / versions.tf / backend.tf
+├── tests/                         # API contract test suite
+│   ├── conftest.py
+│   └── test_*.py
 ├── docs/                          # Reference documentation (by topic)
 │   ├── README.md                  # Navigation index
 │   ├── domain/      (domain-scope, crud-endpoint-plan)
@@ -98,6 +104,12 @@ This repository is for study. Before using in production:
    ```
    To use PostgreSQL instead, set `DATABASE_URL` to a connection string (see [SETUP.md](docs/SETUP.md)).
    For migration lifecycle rules (when to create revisions, baseline stamp flow, and deployment expectations), see [MIGRATIONS.md](docs/MIGRATIONS.md).
+5. Verify the contract test suite:
+   ```bash
+   ./.venv/bin/python -m pytest -q tests
+   ```
+
+Runtime rule: `DATABASE_URL` is required, and startup validates schema presence only. Table creation and schema evolution must happen through migrations.
 
 - Swagger UI: `http://127.0.0.1:8000/docs`
 - ReDoc: `http://127.0.0.1:8000/redoc`
@@ -113,6 +125,8 @@ docker compose up -d api
 ```
 
 API: `http://localhost:8000/`
+
+The API container expects a valid `DATABASE_URL` and a migrated database. If the schema is missing, startup fails fast with a migration instruction instead of creating tables automatically.
 
 ---
 
