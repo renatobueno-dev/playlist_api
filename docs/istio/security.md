@@ -24,7 +24,9 @@ Restricted traffic:
 
 Manifest file: `k8s/istio/security-policies.yaml`
 
-> ⚠️ This manifest uses `__NAMESPACE__`, `__API_SERVICE_ACCOUNT__`, and `__CLUSTER_DOMAIN__` placeholders — it is never applied directly. Use `scripts/render-istio-manifests.sh` to interpolate environment values before applying. The repository uses one shared render/apply path for both Istio files. In CI/CD the workflow step `Apply Istio traffic and security policies` runs this automatically. For local apply: `./scripts/render-istio-manifests.sh | kubectl apply -n music-platform -f -`
+> ⚠️ This manifest uses `__NAMESPACE__`, `__API_SERVICE_ACCOUNT__`, and `__CLUSTER_DOMAIN__` placeholders — it is never applied directly. Use `scripts/render-istio-manifests.sh` to interpolate environment values before applying. The repository uses one shared render/apply path for both Istio files. In CI/CD the workflow step `Apply Istio traffic and security policies` runs this automatically. For local apply: `./scripts/render-istio-manifests.sh | kubectl apply -n "${NAMESPACE:-music-platform}" -f -`
+
+The full render input list lives in [traffic.md](./traffic.md). Security-specific placeholders depend on `NAMESPACE`, `CLUSTER_DOMAIN`, and `API_SERVICE_ACCOUNT`; the latter is derived automatically from `RELEASE_NAME` and `CHART_NAME` unless you override it.
 
 Resources:
 

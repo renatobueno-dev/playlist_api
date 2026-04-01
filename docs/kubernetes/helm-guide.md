@@ -43,12 +43,13 @@ helm/music-platform/
 
 ## ⚙️ Main configurable values
 
+- `nameOverride` and `fullnameOverride` for resource naming overrides when the default Helm naming convention is not desired.
 - API image repo/tag/pull policy.
-- API replica count and service type/port.
+- API replica count, service type/port, container port, and resource requests/limits.
 - API health probes (`startup`, `readiness`, `liveness`) for startup and runtime stability.
 - DB image repo/tag/pull policy.
-- DB name/user/password.
-- DB persistence toggle, storage size, and optional storage class.
+- DB name/user/password and `db.existingSecret` for externally managed runtime credentials.
+- DB service port, persistence toggle, storage size, optional storage class, and resource requests/limits.
 
 ## ⏱️ Probe tuning for smoother startup
 

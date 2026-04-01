@@ -64,6 +64,18 @@ The minimum Terraform-managed infrastructure in this project is:
 
 These labels and guardrails are driven by Terraform inputs such as `pod_security_level`, `pod_security_version`, `resource_quota_hard`, and `limit_range_default*`. No workload resources are included in the minimum scope.
 
+### Key Terraform inputs
+
+`terraform/variables.tf` is the authoritative reference. The main inputs exposed by the current module are:
+
+- `kubeconfig_path`: kubeconfig path used by the Kubernetes provider.
+- `namespace_name`: namespace Terraform manages as the platform baseline.
+- `namespace_labels` and `namespace_annotations`: optional extra metadata merged into the managed namespace.
+- `pod_security_level` and `pod_security_version`: Pod Security Standards labels applied to the namespace.
+- `enable_platform_guardrails`: toggles baseline `ResourceQuota` and `LimitRange` management.
+- `resource_quota_hard`: hard-limit map for the namespace quota baseline.
+- `limit_range_default` and `limit_range_default_request`: default container limits and requests for the namespace `LimitRange`.
+
 **Why this is the safest minimum:**
 - Infrastructure-level, not app-release-level.
 - A direct prerequisite for both Helm deploy and Istio injection.

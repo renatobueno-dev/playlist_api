@@ -2,6 +2,8 @@
 
 This directory stores the execution record for the roadmap cycle that was completed in this repository.
 
+This file is the canonical step-level roadmap index. Higher-level indexes in `README.md` and `docs/README.md` intentionally point here instead of repeating the full step inventory.
+
 Each step file should keep a durable structure:
 
 - context
@@ -20,23 +22,37 @@ Each step file should keep a durable structure:
 
 ## ✅ Completed tracked steps
 
-- `phase-1/step-1-minimum-test-scope.md`
-- `phase-1/step-2-first-test-layer.md`
-- `phase-1/step-3-clean-test-environment.md`
-- `phase-1/step-4-smallest-green-slice.md`
-- `phase-1/step-5-songs-crud-tests.md`
-- `phase-1/step-6-playlists-crud-tests.md`
-- `phase-1/step-7-playlist-song-relationship-tests.md`
-- `phase-1/step-8-negative-tests.md`
-- `phase-1/step-9-local-test-stability.md`
-- `phase-1/step-10-ci-test-integration.md`
-- `phase-2/step-11-migration-ownership.md`
-- `phase-2/step-12-baseline-migration-strategy.md`
-- `phase-2/step-13-migration-structure.md`
-- `phase-2/step-14-clean-db-upgrade-validation.md`
-- `phase-2/step-15-reduce-create-all-responsibility.md`
-- `phase-2/step-16-document-migration-workflow.md`
-- `phase-3/step-17-secret-ownership-boundary.md`
-- `phase-3/step-18-secret-flow-alignment.md`
-- `phase-4/step-19-state-management-policy.md`
-- `phase-5/step-20-platform-guardrails-expansion.md`
+### Phase 1 - automated tests
+
+- [phase-1/step-1-minimum-test-scope.md](./phase-1/step-1-minimum-test-scope.md)
+- [phase-1/step-2-first-test-layer.md](./phase-1/step-2-first-test-layer.md)
+- [phase-1/step-3-clean-test-environment.md](./phase-1/step-3-clean-test-environment.md)
+- [phase-1/step-4-smallest-green-slice.md](./phase-1/step-4-smallest-green-slice.md)
+- [phase-1/step-5-songs-crud-tests.md](./phase-1/step-5-songs-crud-tests.md)
+- [phase-1/step-6-playlists-crud-tests.md](./phase-1/step-6-playlists-crud-tests.md)
+- [phase-1/step-7-playlist-song-relationship-tests.md](./phase-1/step-7-playlist-song-relationship-tests.md)
+- [phase-1/step-8-negative-tests.md](./phase-1/step-8-negative-tests.md)
+- [phase-1/step-9-local-test-stability.md](./phase-1/step-9-local-test-stability.md)
+- [phase-1/step-10-ci-test-integration.md](./phase-1/step-10-ci-test-integration.md)
+
+### Phase 2 - migrations
+
+- [phase-2/step-11-migration-ownership.md](./phase-2/step-11-migration-ownership.md)
+- [phase-2/step-12-baseline-migration-strategy.md](./phase-2/step-12-baseline-migration-strategy.md)
+- [phase-2/step-13-migration-structure.md](./phase-2/step-13-migration-structure.md)
+- [phase-2/step-14-clean-db-upgrade-validation.md](./phase-2/step-14-clean-db-upgrade-validation.md)
+- [phase-2/step-15-reduce-create-all-responsibility.md](./phase-2/step-15-reduce-create-all-responsibility.md)
+- [phase-2/step-16-document-migration-workflow.md](./phase-2/step-16-document-migration-workflow.md)
+
+### Phase 3 - secrets and deployment flow
+
+- [phase-3/step-17-secret-ownership-boundary.md](./phase-3/step-17-secret-ownership-boundary.md)
+- [phase-3/step-18-secret-flow-alignment.md](./phase-3/step-18-secret-flow-alignment.md)
+
+### Phase 4 - Terraform state maturity
+
+- [phase-4/step-19-state-management-policy.md](./phase-4/step-19-state-management-policy.md)
+
+### Phase 5 - platform guardrails
+
+- [phase-5/step-20-platform-guardrails-expansion.md](./phase-5/step-20-platform-guardrails-expansion.md)

@@ -8,13 +8,15 @@ This folder records completed post-checkpoint remediation work for confirmed rep
 
 It is intentionally separated from the original stage documentation and does not replace the existing `docs/` guides.
 
+Use this file as the entry point for remediation notes; each item below links to the detailed fix record.
+
 ## 📄 Files
 
-- `loose-ends-priority-roadmap.md`: historical remediation order, checkpoint lens, and execution record.
-- `namespace-single-source-of-truth.md`: Step 1 implementation details for namespace consistency across Terraform, workflow, and Istio apply flow.
-- `security-defaults-hardening.md`: Step 2 implementation details for Helm default image/secret hardening.
-- `runtime-hardening-baseline.md`: Step 3 implementation details for Docker runtime and Helm resource hardening.
-- `pipeline-reproducibility-hardening.md`: Step 4 implementation details for CI reproducibility and dependency/image pinning.
-- `terraform-kubernetes-posture-hardening.md`: Step 5 implementation details for Terraform baseline posture and namespace security labels.
-- `istio-destinationrule-resilience.md`: Step 6 implementation details for Istio DestinationRule resilience policy.
-- `post-step-followups.md`: remaining small follow-up fixes completed after Steps 1-6.
+- [loose-ends-priority-roadmap.md](./loose-ends-priority-roadmap.md): historical remediation order, checkpoint lens, and execution record.
+- [namespace-single-source-of-truth.md](./namespace-single-source-of-truth.md): Step 1 implementation details for namespace consistency across Terraform, workflow, and Istio apply flow.
+- [security-defaults-hardening.md](./security-defaults-hardening.md): Step 2 implementation details for Helm default image/secret hardening.
+- [runtime-hardening-baseline.md](./runtime-hardening-baseline.md): Step 3 implementation details for Docker runtime and Helm resource hardening.
+- [pipeline-reproducibility-hardening.md](./pipeline-reproducibility-hardening.md): Step 4 implementation details for CI reproducibility and dependency/image pinning.
+- [terraform-kubernetes-posture-hardening.md](./terraform-kubernetes-posture-hardening.md): Step 5 implementation details for Terraform baseline posture and namespace security labels.
+- [istio-destinationrule-resilience.md](./istio-destinationrule-resilience.md): Step 6 implementation details for Istio DestinationRule resilience policy.
+- [post-step-followups.md](./post-step-followups.md): remaining small follow-up fixes completed after Steps 1-6.

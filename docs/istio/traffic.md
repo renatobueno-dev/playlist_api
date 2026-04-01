@@ -33,7 +33,25 @@ In-cluster request path:
 
 Manifest file: `k8s/istio/traffic-management.yaml`
 
-> ⚠️ This manifest uses `__NAMESPACE__`, `__ISTIO_HOST__`, `__ISTIO_TLS_SECRET__`, and `__API_SERVICE_HOST__` placeholders — it is never applied directly. Use `scripts/render-istio-manifests.sh` to interpolate environment values before applying. The repository uses one shared render/apply path for both Istio files. In CI/CD the workflow step `Apply Istio traffic and security policies` runs this automatically. For local apply: `./scripts/render-istio-manifests.sh | kubectl apply -n "${NAMESPACE}" -f -`
+> ⚠️ This manifest uses `__NAMESPACE__`, `__ISTIO_HOST__`, `__ISTIO_TLS_SECRET__`, and `__API_SERVICE_HOST__` placeholders — it is never applied directly. Use `scripts/render-istio-manifests.sh` to interpolate environment values before applying. The repository uses one shared render/apply path for both Istio files. In CI/CD the workflow step `Apply Istio traffic and security policies` runs this automatically. For local apply: `./scripts/render-istio-manifests.sh | kubectl apply -n "${NAMESPACE:-music-platform}" -f -`
+
+### 🧮 Render inputs
+
+`scripts/render-istio-manifests.sh` accepts these environment variables:
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `NAMESPACE` | `music-platform` | Namespace applied to all rendered Istio resources |
+| `RELEASE_NAME` | `music-platform` | Helm release name used to derive default service/account names |
+| `CHART_NAME` | `music-platform` | Chart name used together with `RELEASE_NAME` for derived defaults |
+| `ISTIO_HOST` | `playcatch.local` | External host rendered into `Gateway` and `VirtualService` |
+| `ISTIO_TLS_SECRET` | `playcatch-tls` | TLS credential secret name used by the `Gateway` |
+| `CLUSTER_DOMAIN` | `cluster.local` | Cluster domain used in the SPIFFE principal for authorization |
+| `API_SERVICE_NAME` | derived from `RELEASE_NAME` and `CHART_NAME` | Override only if the rendered API Service name differs from chart defaults |
+| `API_SERVICE_ACCOUNT` | derived from `RELEASE_NAME` and `CHART_NAME` | Override only if the rendered API ServiceAccount name differs from chart defaults |
+| `API_SERVICE_HOST` | derived from `API_SERVICE_NAME` and `NAMESPACE` | Full in-cluster API hostname used in `VirtualService` and `DestinationRule` |
+
+In most environments, only `NAMESPACE`, `ISTIO_HOST`, and `ISTIO_TLS_SECRET` need explicit overrides. The service name, service account, and service host are derived automatically from Helm naming defaults unless you intentionally changed chart naming.
 
 Resources applied:
 

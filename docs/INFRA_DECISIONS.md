@@ -40,7 +40,7 @@ The Kubernetes `Service` handles pod discovery only — no HTTP awareness. The I
 
 ### Istio manifest templating
 
-Manifests in `k8s/istio/` use `__NAMESPACE__`, `__ISTIO_HOST__`, `__ISTIO_TLS_SECRET__`, `__API_SERVICE_HOST__`, `__CLUSTER_DOMAIN__`, and `__API_SERVICE_ACCOUNT__` placeholders and are rendered at deploy time via `scripts/render-istio-manifests.sh`. This keeps namespace, TLS, and service identity values consistent without duplicating them across files.
+Manifests in `k8s/istio/` use `__NAMESPACE__`, `__ISTIO_HOST__`, `__ISTIO_TLS_SECRET__`, `__API_SERVICE_HOST__`, `__CLUSTER_DOMAIN__`, and `__API_SERVICE_ACCOUNT__` placeholders and are rendered at deploy time via `scripts/render-istio-manifests.sh`. The render path supports `NAMESPACE`, `RELEASE_NAME`, `CHART_NAME`, `ISTIO_HOST`, `ISTIO_TLS_SECRET`, `CLUSTER_DOMAIN`, and optional API service identity overrides (`API_SERVICE_NAME`, `API_SERVICE_ACCOUNT`, `API_SERVICE_HOST`). This keeps namespace, TLS, and service identity values consistent without duplicating them across files. Default values and override guidance are documented in [`docs/istio/traffic.md`](./istio/traffic.md).
 
 ---
 

@@ -71,7 +71,7 @@ This keeps boundary clear while remaining compatible with current chart capabili
 
 Shared-environment deploy flow is now aligned with this policy:
 
-1. Terraform applies namespace baseline and labels only.
+1. Terraform applies the namespace baseline, required labels, and namespace guardrails (`ResourceQuota` and `LimitRange`).
 2. CI checks deploy access (`KUBE_CONFIG_DATA`).
 3. CI verifies runtime secret exists in namespace (`DB_EXISTING_SECRET_NAME`, default `music-platform-secret`).
 4. CI verifies required secret keys: `DATABASE_URL` and `POSTGRES_PASSWORD`.
@@ -80,7 +80,7 @@ Shared-environment deploy flow is now aligned with this policy:
 
 This keeps ownership coherent:
 
-- Terraform: environment baseline
+- Terraform: environment baseline and guardrails
 - Helm: workload deployment
 - CI: orchestration and validation
 - External Kubernetes Secret: runtime credential source

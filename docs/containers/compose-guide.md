@@ -18,8 +18,12 @@ Compose must include:
 Commands:
 
 ```bash
+cp .env.example .env
+set -a
+source .env
+set +a
 docker compose up -d --build db
-export DATABASE_URL=postgresql+psycopg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@localhost:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-music_platform}
+export DATABASE_URL=postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${POSTGRES_PORT}/${POSTGRES_DB}
 ./.venv/bin/alembic upgrade head
 docker compose up -d api
 docker compose ps
@@ -33,7 +37,7 @@ curl -X POST http://127.0.0.1:8000/songs/ \
   -H "Content-Type: application/json" \
   -d '{"title":"Compose Song","artist":"Compose Tester"}'
 curl http://127.0.0.1:8000/songs/
-docker compose exec -T db psql -U postgres -d music_platform -c "SELECT COUNT(*) FROM songs;"
+docker compose exec -T db psql -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" -c "SELECT COUNT(*) FROM songs;"
 ```
 
 Checkpoint:
