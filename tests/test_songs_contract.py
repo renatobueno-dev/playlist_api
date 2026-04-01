@@ -20,85 +20,116 @@ def create_song(
     return response.json()
 
 
-def test_song_create_and_list_contract(client: TestClient) -> None:
-    created_song = create_song(client)
-    song_id = created_song["id"]
+def assert_song_payload(
+    song: dict,
+    *,
+    song_id: int | None = None,
+    expected: dict[str, object] | None = None,
+) -> None:
+    expected_payload = {
+        "title": "Numb",
+        "artist": "Linkin Park",
+        "album": "Meteora",
+        "genre": "Rock",
+        "duration_seconds": 185,
+        "release_year": 2003,
+    }
+    if expected is not None:
+        expected_payload.update(expected)
 
-    assert created_song["title"] == "Numb"
-    assert created_song["artist"] == "Linkin Park"
-    assert created_song["genre"] == "Rock"
-    assert created_song["duration_seconds"] == 185
+    if song_id is not None:
+        assert song["id"] == song_id
+    actual_payload = {field_name: song[field_name] for field_name in expected_payload}
+    assert actual_payload == expected_payload
+
+
+def assert_song_not_found(response) -> None:
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Song not found"}
+
+
+def test_song_create_returns_expected_payload(client: TestClient) -> None:
+    created_song = create_song(client)
+
+    assert_song_payload(created_song)
+
+
+def test_song_list_includes_created_song(client: TestClient) -> None:
+    created_song = create_song(client)
 
     list_response = client.get("/songs/")
     assert list_response.status_code == 200
+
     listed_songs = list_response.json()
-    assert any(song["id"] == song_id for song in listed_songs)
+    assert any(song["id"] == created_song["id"] for song in listed_songs)
 
 
 def test_song_get_by_id_returns_created_song(client: TestClient) -> None:
     created_song = create_song(client)
-    song_id = created_song["id"]
 
-    read_response = client.get(f"/songs/{song_id}")
+    read_response = client.get(f"/songs/{created_song['id']}")
     assert read_response.status_code == 200
 
-    read_song = read_response.json()
-    assert read_song["id"] == song_id
-    assert read_song["title"] == "Numb"
-    assert read_song["genre"] == "Rock"
+    assert_song_payload(read_response.json(), song_id=created_song["id"])
 
 
 def test_song_patch_updates_only_expected_fields(client: TestClient) -> None:
     created_song = create_song(client)
-    song_id = created_song["id"]
 
-    update_response = client.patch(f"/songs/{song_id}", json={"genre": "Alternative Rock"})
+    update_response = client.patch(
+        f"/songs/{created_song['id']}",
+        json={"genre": "Alternative Rock"},
+    )
     assert update_response.status_code == 200
 
-    updated_song = update_response.json()
-    assert updated_song["genre"] == "Alternative Rock"
-    assert updated_song["title"] == "Numb"
-    assert updated_song["duration_seconds"] == 185
+    assert_song_payload(
+        update_response.json(),
+        song_id=created_song["id"],
+        expected={"genre": "Alternative Rock"},
+    )
 
 
 def test_song_delete_removes_song(client: TestClient) -> None:
     created_song = create_song(client)
-    song_id = created_song["id"]
 
-    delete_response = client.delete(f"/songs/{song_id}")
+    delete_response = client.delete(f"/songs/{created_song['id']}")
     assert delete_response.status_code == 204
 
-    read_deleted_response = client.get(f"/songs/{song_id}")
-    assert read_deleted_response.status_code == 404
-    assert read_deleted_response.json() == {"detail": "Song not found"}
+    read_deleted_response = client.get(f"/songs/{created_song['id']}")
+    assert_song_not_found(read_deleted_response)
 
 
-def test_song_missing_id_returns_404_for_get_patch_and_delete(client: TestClient) -> None:
-    missing_song_id = 99999
+def test_song_get_missing_id_returns_404(client: TestClient) -> None:
+    response = client.get("/songs/99999")
 
-    get_response = client.get(f"/songs/{missing_song_id}")
-    assert get_response.status_code == 404
-    assert get_response.json() == {"detail": "Song not found"}
-
-    patch_response = client.patch(f"/songs/{missing_song_id}", json={"genre": "Any Genre"})
-    assert patch_response.status_code == 404
-    assert patch_response.json() == {"detail": "Song not found"}
-
-    delete_response = client.delete(f"/songs/{missing_song_id}")
-    assert delete_response.status_code == 404
-    assert delete_response.json() == {"detail": "Song not found"}
+    assert_song_not_found(response)
 
 
-def test_create_song_with_invalid_payload_returns_422(client: TestClient) -> None:
-    missing_required_field_response = client.post(
+def test_song_patch_missing_id_returns_404(client: TestClient) -> None:
+    response = client.patch("/songs/99999", json={"genre": "Any Genre"})
+
+    assert_song_not_found(response)
+
+
+def test_song_delete_missing_id_returns_404(client: TestClient) -> None:
+    response = client.delete("/songs/99999")
+
+    assert_song_not_found(response)
+
+
+def test_create_song_missing_required_field_returns_422(client: TestClient) -> None:
+    response = client.post(
         "/songs/",
         json={
             "title": "Missing Artist",
         },
     )
-    assert missing_required_field_response.status_code == 422
 
-    invalid_duration_response = client.post(
+    assert response.status_code == 422
+
+
+def test_create_song_invalid_duration_returns_422(client: TestClient) -> None:
+    response = client.post(
         "/songs/",
         json={
             "title": "Invalid Duration",
@@ -106,9 +137,12 @@ def test_create_song_with_invalid_payload_returns_422(client: TestClient) -> Non
             "duration_seconds": 0,
         },
     )
-    assert invalid_duration_response.status_code == 422
 
-    invalid_field_type_response = client.post(
+    assert response.status_code == 422
+
+
+def test_create_song_invalid_field_type_returns_422(client: TestClient) -> None:
+    response = client.post(
         "/songs/",
         json={
             "title": {"unexpected": "object"},
@@ -116,4 +150,5 @@ def test_create_song_with_invalid_payload_returns_422(client: TestClient) -> Non
             "duration_seconds": 180,
         },
     )
-    assert invalid_field_type_response.status_code == 422
+
+    assert response.status_code == 422
