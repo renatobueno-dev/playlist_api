@@ -58,6 +58,7 @@ Coding and implementation issues during the step:
 - the step needed to distinguish between "worth revisiting later" and "needs action now"
 - once that first `B` hotspot was intentionally revisited, the safest refactor was to split by missing-resource case rather than invent new shared test abstractions
 - the main coding constraint was preserving the same `404` detail contract while decomposing one matrix-style test into four narrower endpoint-specific checks
+- the service-helper follow-up needed to reduce branch density without obscuring the playlist lookup flow behind generic abstractions
 
 ## 📝 Step execution notes
 
@@ -70,10 +71,12 @@ Coding and implementation issues during the step:
   - the combined playlist-song missing-resource test was split into narrower link/unlink 404 cases
 - Result of that follow-up:
   - the former `B / 9` hotspot became four separate `A / 3` tests
-- Highest-priority remaining `B` target:
-  - review `_resolve_songs` if playlist-service logic changes again
-- Next most relevant non-test target:
-  - separate normalization, lookup, and missing-song validation inside `_resolve_songs` if that service changes later
+- Second applied follow-up:
+  - `_resolve_songs` was split into normalization, song lookup, and missing-song validation helpers
+- Result of that follow-up:
+  - `_resolve_songs` dropped from `B / 7` to `A / 3`
+- Remaining practical hotspot focus:
+  - the remaining `B` ranks are now concentrated in larger contract tests rather than runtime helpers
 - Current conclusion:
   - the repository is in a healthy `radon` state
   - remaining `B` ranks are a maintenance queue, not a blocker

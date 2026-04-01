@@ -27,21 +27,34 @@ def _deduplicate_ids(ids: Sequence[int]) -> list[int]:
     return list(dict.fromkeys(ids))
 
 
+def _load_songs_by_id(session: Session, song_ids: Sequence[int]) -> dict[int, Song]:
+    """Load songs once and index them by identifier for ordered reconstruction."""
+    statement = select(Song).where(Song.id.in_(song_ids))
+    songs = session.scalars(statement).all()
+    return {song.id: song for song in songs}
+
+
+def _missing_song_ids(song_ids: Sequence[int], songs_by_id: dict[int, Song]) -> list[int]:
+    """Return the subset of requested song IDs that did not resolve."""
+    return [song_id for song_id in song_ids if song_id not in songs_by_id]
+
+
+def _validate_resolved_songs(song_ids: Sequence[int], songs_by_id: dict[int, Song]) -> None:
+    """Raise with the missing subset when playlist song IDs cannot be resolved."""
+    missing_song_ids = _missing_song_ids(song_ids, songs_by_id)
+    if missing_song_ids:
+        logger.warning("Playlist operation aborted. Missing songs: %s.", missing_song_ids)
+        raise MissingSongsError(missing_song_ids)
+
+
 def _resolve_songs(session: Session, song_ids: Sequence[int]) -> list[Song]:
     """Resolve playlist song IDs in order or raise on the missing subset."""
     unique_song_ids = _deduplicate_ids(song_ids)
     if not unique_song_ids:
         return []
 
-    statement = select(Song).where(Song.id.in_(unique_song_ids))
-    songs = session.scalars(statement).all()
-    songs_by_id = {song.id: song for song in songs}
-    missing_song_ids = [song_id for song_id in unique_song_ids if song_id not in songs_by_id]
-
-    if missing_song_ids:
-        logger.warning("Playlist operation aborted. Missing songs: %s.", missing_song_ids)
-        raise MissingSongsError(missing_song_ids)
-
+    songs_by_id = _load_songs_by_id(session, unique_song_ids)
+    _validate_resolved_songs(unique_song_ids, songs_by_id)
     return [songs_by_id[song_id] for song_id in unique_song_ids]
 
 
