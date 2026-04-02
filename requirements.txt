@@ -1,4 +1,7 @@
+# Web framework
 fastapi==0.135.1
 uvicorn[standard]==0.42.0
-sqlalchemy==2.0.48
+
+# Database
 psycopg[binary]==3.3.3
+sqlalchemy==2.0.48

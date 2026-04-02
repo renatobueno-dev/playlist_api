@@ -1,12 +1,23 @@
+# Version control
 .git
 .gitignore
+
+# Virtual environments
 .venv
+
+# Python caches
 __pycache__
 *.pyc
 *.pyo
 *.pyd
 .pytest_cache
+
+# Local databases
 *.db
 *.sqlite3
+
+# Logs
 *.log
+
+# Documentation
 *.md
