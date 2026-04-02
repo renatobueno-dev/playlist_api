@@ -24,13 +24,13 @@ The intent is to add **new signal**, not duplicate what Ruff, Pylint, Radon, Hel
 
 ## ✅ Current rollout status
 
-| Tool | Status | Repo role |
-| --- | --- | --- |
-| `gitleaks` | Implemented | secret scanning |
-| `pip-audit` | Implemented | Python dependency vulnerability audit |
-| `lychee` | Implemented | documentation link integrity |
-| `bandit` | Implemented, tuned | Python security-pattern scan |
-| `trivy` | Planned next phase | image and infrastructure security scan |
+| Tool        | Status             | Repo role                              |
+| ----------- | ------------------ | -------------------------------------- |
+| `gitleaks`  | Implemented        | secret scanning                        |
+| `pip-audit` | Implemented        | Python dependency vulnerability audit  |
+| `lychee`    | Implemented        | documentation link integrity           |
+| `bandit`    | Implemented, tuned | Python security-pattern scan           |
+| `trivy`     | Planned next phase | image and infrastructure security scan |
 
 The first enforced security layer is intentionally:
 

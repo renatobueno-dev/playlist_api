@@ -11,7 +11,7 @@ resolve_python_runner() {
     return
   fi
 
-  if command -v python3 >/dev/null 2>&1; then
+  if command -v python3 > /dev/null 2>&1; then
     command -v python3
     return
   fi
@@ -25,7 +25,7 @@ PYTHON_RUNNER="$(resolve_python_runner)"
 require_command() {
   local command_name="$1"
 
-  if ! command -v "${command_name}" >/dev/null 2>&1; then
+  if ! command -v "${command_name}" > /dev/null 2>&1; then
     echo "Missing required command: ${command_name}" >&2
     exit 1
   fi
@@ -54,7 +54,7 @@ run_python_cli() {
 copy_repo_snapshot() {
   local destination_dir="$1"
 
-  "${PYTHON_RUNNER}" - "${destination_dir}" <<'PY'
+  "${PYTHON_RUNNER}" - "${destination_dir}" << 'PY'
 from __future__ import annotations
 
 import shutil
@@ -137,6 +137,7 @@ run_python_quality_checks() {
 run_gitleaks_check() {
   local scan_mode
   local snapshot_dir
+  local exit_code
 
   scan_mode="${GITLEAKS_MODE:-dir}"
 
@@ -146,10 +147,16 @@ run_gitleaks_check() {
   fi
 
   snapshot_dir="$(mktemp -d)"
-  trap "rm -rf '${snapshot_dir}'" RETURN
 
   copy_repo_snapshot "${snapshot_dir}"
-  ./scripts/run-quality-tool.sh gitleaks dir --no-banner --redact "${snapshot_dir}"
+  if ./scripts/run-quality-tool.sh gitleaks dir --no-banner --redact "${snapshot_dir}"; then
+    rm -rf -- "${snapshot_dir}"
+    return
+  fi
+
+  exit_code=$?
+  rm -rf -- "${snapshot_dir}"
+  return "${exit_code}"
 }
 
 run_lychee_check() {
@@ -174,7 +181,7 @@ run_security_checks() {
 validate_rendered_manifest() {
   local manifest_path="$1"
 
-  "${PYTHON_RUNNER}" - "${manifest_path}" <<'PY'
+  "${PYTHON_RUNNER}" - "${manifest_path}" << 'PY'
 from __future__ import annotations
 
 import sys
@@ -224,7 +231,7 @@ run_infra_checks() {
   require_command helm
   require_command terraform
 
-  docker compose config >/dev/null
+  docker compose config > /dev/null
 
   helm lint helm/music-platform
 
@@ -235,14 +242,14 @@ run_infra_checks() {
 
   trap 'rm -f "${helm_render_file}" "${helm_external_secret_file}" "${istio_render_file}"; rm -rf "${terraform_data_dir}"' RETURN
 
-  helm template music-platform helm/music-platform >"${helm_render_file}"
+  helm template music-platform helm/music-platform > "${helm_render_file}"
   validate_rendered_manifest "${helm_render_file}"
 
   helm template music-platform helm/music-platform \
-    --set db.existingSecret=runtime-db-secret >"${helm_external_secret_file}"
+    --set db.existingSecret=runtime-db-secret > "${helm_external_secret_file}"
   validate_rendered_manifest "${helm_external_secret_file}"
 
-  ./scripts/render-istio-manifests.sh >"${istio_render_file}"
+  ./scripts/render-istio-manifests.sh > "${istio_render_file}"
   validate_rendered_manifest "${istio_render_file}"
 
   terraform -chdir=terraform fmt -check -recursive

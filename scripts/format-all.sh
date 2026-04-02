@@ -10,7 +10,7 @@ resolve_python_runner() {
     return
   fi
 
-  if command -v python3 >/dev/null 2>&1; then
+  if command -v python3 > /dev/null 2>&1; then
     command -v python3
     return
   fi
@@ -42,7 +42,7 @@ run_fixing_pre_commit_hook() {
 require_command() {
   local command_name="$1"
 
-  if ! command -v "${command_name}" >/dev/null 2>&1; then
+  if ! command -v "${command_name}" > /dev/null 2>&1; then
     echo "Missing required command: ${command_name}" >&2
     exit 1
   fi

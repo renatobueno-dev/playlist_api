@@ -30,10 +30,10 @@ normalize_os() {
 
 normalize_arch() {
   case "$(uname -m)" in
-    x86_64|amd64)
+    x86_64 | amd64)
       echo "x86_64"
       ;;
-    arm64|aarch64)
+    arm64 | aarch64)
       echo "arm64"
       ;;
     *)
@@ -181,7 +181,7 @@ ensure_dotenv_linter() {
   esac
 
   extract_dir="${TOOLS_DIR}/dotenv-linter-${version}-${os_name}-${arch_name}"
-  binary_path="$(find "${extract_dir}" -type f -name "dotenv-linter" 2>/dev/null | head -n 1 || true)"
+  binary_path="$(find "${extract_dir}" -type f -name "dotenv-linter" 2> /dev/null | head -n 1 || true)"
 
   if [[ -z "${binary_path}" || ! -x "${binary_path}" ]]; then
     archive_path="${TOOLS_DIR}/${asset_name}"
@@ -201,7 +201,7 @@ ensure_dotenv_linter() {
 run_lychee() {
   local image_tag="0.23.0"
 
-  if ! command -v docker >/dev/null 2>&1; then
+  if ! command -v docker > /dev/null 2>&1; then
     echo "lychee requires docker on this project wrapper." >&2
     exit 1
   fi

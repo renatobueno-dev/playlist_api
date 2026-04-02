@@ -52,10 +52,10 @@ The following configuration files were added to support the quality stack:
 
 The following helper scripts were added:
 
-| File                                                               | Purpose                                                                                   |
-| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| [`../scripts/format-all.sh`](../scripts/format-all.sh)             | Formats the repository using the approved toolchain                                       |
-| [`../scripts/check-quality.sh`](../scripts/check-quality.sh)       | Runs layered validation with `fast`, `python`, `security`, `infra`, `runtime`, or `all`    |
+| File                                                               | Purpose                                                                                                          |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| [`../scripts/format-all.sh`](../scripts/format-all.sh)             | Formats the repository using the approved toolchain                                                              |
+| [`../scripts/check-quality.sh`](../scripts/check-quality.sh)       | Runs layered validation with `fast`, `python`, `security`, `infra`, `runtime`, or `all`                          |
 | [`../scripts/run-quality-tool.sh`](../scripts/run-quality-tool.sh) | Downloads or runs pinned tool entrypoints such as `hadolint`, `dotenv-linter`, `gitleaks`, `lychee`, and `trivy` |
 
 ### CI workflow changes
