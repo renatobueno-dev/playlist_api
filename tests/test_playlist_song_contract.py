@@ -82,6 +82,22 @@ def test_playlist_song_repeated_unlink_is_idempotent(client: TestClient) -> None
     assert remove_again_response.status_code == 204
 
 
+def test_playlist_song_delete_cascades_when_song_is_removed(client: TestClient) -> None:
+    """Verify deleting a song removes its playlist relation but keeps the playlist."""
+    song = create_song(client, title="Cascade Song")
+    playlist = create_playlist(client, name="Cascade Playlist")
+
+    add_response = client.post(f"/playlists/{playlist['id']}/songs/{song['id']}")
+    assert add_response.status_code == 201
+
+    delete_song_response = client.delete(f"/songs/{song['id']}")
+    assert delete_song_response.status_code == 204
+
+    playlist_after_delete = client.get(f"/playlists/{playlist['id']}")
+    assert playlist_after_delete.status_code == 200
+    assert playlist_after_delete.json()["songs"] == []
+
+
 def test_playlist_song_link_returns_404_when_playlist_missing(client: TestClient) -> None:
     """Verify linking fails when the playlist does not exist."""
     song = create_song(client, title="Existing Song")

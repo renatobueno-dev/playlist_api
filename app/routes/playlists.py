@@ -114,7 +114,7 @@ def remove_song_from_playlist_endpoint(
     playlist_id: int,
     song_id: int,
     session: Session = Depends(get_session),
-) -> None:
+) -> Response:
     """Unlink a song from a playlist after validating both records exist."""
     playlist = get_playlist_by_id(session, playlist_id)
     if playlist is None:
@@ -125,3 +125,4 @@ def remove_song_from_playlist_endpoint(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=SONG_NOT_FOUND_DETAIL)
 
     remove_song_from_playlist(session, playlist, song)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

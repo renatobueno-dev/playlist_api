@@ -63,6 +63,14 @@ def test_song_list_includes_created_song(client: TestClient) -> None:
     assert any(song["id"] == created_song["id"] for song in listed_songs)
 
 
+def test_song_list_returns_empty_list_when_no_songs_exist(client: TestClient) -> None:
+    """Verify the song list endpoint returns an empty collection initially."""
+    list_response = client.get("/songs/")
+
+    assert list_response.status_code == 200
+    assert list_response.json() == []
+
+
 def test_song_get_by_id_returns_created_song(client: TestClient) -> None:
     """Verify fetching by id returns the created song."""
     created_song = create_song(client)
@@ -160,3 +168,74 @@ def test_create_song_invalid_field_type_returns_422(client: TestClient) -> None:
     )
 
     assert response.status_code == 422
+
+
+def test_create_song_malformed_json_returns_422(client: TestClient) -> None:
+    """Verify malformed JSON bodies are rejected before route execution."""
+    response = client.post(
+        "/songs/",
+        content='{"title":',
+        headers={"content-type": "application/json"},
+    )
+
+    assert response.status_code == 422
+
+
+def test_create_song_accepts_explicit_nullable_fields(client: TestClient) -> None:
+    """Verify nullable song fields round-trip correctly when set to null."""
+    response = client.post(
+        "/songs/",
+        json={
+            "title": "Nullable Fields",
+            "artist": "Test Artist",
+            "album": None,
+            "genre": None,
+            "duration_seconds": None,
+            "release_date": None,
+            "release_year": None,
+        },
+    )
+
+    assert response.status_code == 201
+    song = response.json()
+    assert_song_payload(
+        song,
+        song_expectations(
+            title="Nullable Fields",
+            artist="Test Artist",
+            album=None,
+            genre=None,
+            duration_seconds=None,
+            release_date=None,
+            release_year=None,
+        ),
+    )
+
+
+def test_create_song_accepts_maximum_length_fields(client: TestClient) -> None:
+    """Verify documented song string limits are accepted at their boundary."""
+    response = client.post(
+        "/songs/",
+        json={
+            "title": "T" * 255,
+            "artist": "A" * 255,
+            "album": "B" * 255,
+            "genre": "G" * 100,
+            "duration_seconds": 1,
+            "release_year": 2100,
+        },
+    )
+
+    assert response.status_code == 201
+    song = response.json()
+    assert_song_payload(
+        song,
+        song_expectations(
+            title="T" * 255,
+            artist="A" * 255,
+            album="B" * 255,
+            genre="G" * 100,
+            duration_seconds=1,
+            release_year=2100,
+        ),
+    )

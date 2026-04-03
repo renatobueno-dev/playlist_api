@@ -62,6 +62,14 @@ def test_playlist_list_includes_created_playlist(client: TestClient) -> None:
     assert any(playlist["id"] == created_playlist["id"] for playlist in listed_playlists)
 
 
+def test_playlist_list_returns_empty_list_when_no_playlists_exist(client: TestClient) -> None:
+    """Verify the playlist list endpoint returns an empty collection initially."""
+    list_response = client.get("/playlists/")
+
+    assert list_response.status_code == 200
+    assert list_response.json() == []
+
+
 def test_playlist_get_by_id_returns_created_playlist(client: TestClient) -> None:
     """Verify fetching by id returns the created playlist."""
     created_playlist = create_playlist(client)
@@ -153,6 +161,17 @@ def test_playlist_create_extra_field_returns_422(client: TestClient) -> None:
     assert response.status_code == 422
 
 
+def test_playlist_create_malformed_json_returns_422(client: TestClient) -> None:
+    """Verify malformed JSON bodies are rejected before route execution."""
+    response = client.post(
+        "/playlists/",
+        content='{"name":',
+        headers={"content-type": "application/json"},
+    )
+
+    assert response.status_code == 422
+
+
 def test_playlist_patch_empty_name_returns_422(client: TestClient) -> None:
     """Verify empty playlist names are rejected during patch."""
     created_playlist = create_playlist(client, name="Patch Validation")
@@ -202,3 +221,21 @@ def test_playlist_patch_nonexistent_song_ids_returns_404(client: TestClient) -> 
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Songs not found: [99999]"}
+
+
+def test_playlist_create_accepts_maximum_length_fields(client: TestClient) -> None:
+    """Verify documented playlist string limits are accepted at their boundary."""
+    response = client.post(
+        "/playlists/",
+        json={
+            "name": "N" * 255,
+            "description": "D" * 500,
+            "is_public": False,
+        },
+    )
+
+    assert response.status_code == 201
+    playlist = response.json()
+    assert playlist["name"] == "N" * 255
+    assert playlist["description"] == "D" * 500
+    assert playlist["is_public"] is False
