@@ -20,6 +20,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - GitHub Actions validation is now split into `fast-quality`, `python-quality`, `security-validation`, and `runtime-validation` before deploy.
 - Repository docs were synchronized with the current quality model, CI layers, and static-analysis history, including the historical transition from local-only static analysis to CI enforcement.
 - Docker Compose now consumes explicit database URLs instead of assembling them from raw `POSTGRES_*` variables, and the setup docs now distinguish container-facing and host-facing connection strings.
+- The Helm chart now defaults to two API replicas, with docs updated to describe the local override path for lightweight clusters.
 
 ### Fixed
 

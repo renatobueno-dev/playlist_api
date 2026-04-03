@@ -252,3 +252,4 @@ The rollout plan and the staged `trivy` follow-up are documented in [SECURITY_TO
 - Baseline migration revision is `abff2336451a` and clean upgrade flow has been validated from base to head.
 - Startup validates DB reachability and required tables; missing schema must be applied via migrations (`alembic upgrade head`).
 - DB startup retry is configurable via `STARTUP_DB_MAX_RETRIES` (default `20`) and `STARTUP_DB_RETRY_SECONDS` (default `2`). Kubernetes startup behaviour is also controlled by `api.probes.startup` in `helm/music-platform/values.yaml`.
+- The Helm chart now defaults to `api.replicaCount: 2` for a more production-like API posture. For lightweight local clusters, you can still override it with `--set api.replicaCount=1`.

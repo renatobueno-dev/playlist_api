@@ -45,7 +45,7 @@ helm/music-platform/
 
 - `nameOverride` and `fullnameOverride` for resource naming overrides when the default Helm naming convention is not desired.
 - API image repo/tag/pull policy.
-- API replica count, service type/port, container port, and resource requests/limits.
+- API replica count, service type/port, container port, and resource requests/limits. The chart now defaults to `api.replicaCount: 2`; override it to `1` only for lightweight local clusters that do not need the extra replica.
 - API health probes (`startup`, `readiness`, `liveness`) for startup and runtime stability.
 - DB image repo/tag/pull policy.
 - DB name/user/password and `db.existingSecret` for externally managed runtime credentials.
@@ -114,6 +114,12 @@ This example matches the current chart default in `values.yaml` (`api.image.tag:
 - `helm/music-platform/values.yaml` (`api.image.tag`), or
 - command line override:
   - `helm upgrade --install ... --set api.image.tag=<tag>`
+
+If your local cluster is resource-constrained, you can also temporarily scale the API back down during install:
+
+```bash
+helm upgrade --install ... --set api.replicaCount=1
+```
 
 For migration ownership and rollout flow details, see [MIGRATIONS.md](../MIGRATIONS.md).
 For namespace baseline and mesh-readiness prerequisites, see [Terraform integration flow](../terraform/flow-integration.md) and [Istio readiness](../istio/readiness.md).
