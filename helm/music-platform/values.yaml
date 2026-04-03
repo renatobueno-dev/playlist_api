@@ -42,6 +42,22 @@ db:
     pullPolicy: IfNotPresent
   service:
     port: 5432
+  probes:
+    startup:
+      initialDelaySeconds: 0
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 12
+    readiness:
+      initialDelaySeconds: 10
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 5
+    liveness:
+      initialDelaySeconds: 20
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 5
   name: music_platform
   user: postgres
   password: null

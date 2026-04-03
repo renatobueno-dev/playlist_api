@@ -25,7 +25,7 @@ env:
 jobs:
   fast-quality:
     name: Fast Quality Checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
@@ -50,7 +50,7 @@ jobs:
 
   python-quality:
     name: Python Quality Policy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
@@ -70,7 +70,7 @@ jobs:
 
   security-validation:
     name: Security Validation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
@@ -95,7 +95,7 @@ jobs:
 
   runtime-validation:
     name: Runtime Validation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
@@ -135,7 +135,7 @@ jobs:
 
   deploy:
     name: Build Push And Deploy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - fast-quality
       - python-quality

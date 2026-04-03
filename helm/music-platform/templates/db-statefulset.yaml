@@ -66,26 +66,36 @@ spec:
                   key: POSTGRES_PASSWORD
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
+          startupProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: {{ .Values.db.probes.startup.initialDelaySeconds }}
+            periodSeconds: {{ .Values.db.probes.startup.periodSeconds }}
+            timeoutSeconds: {{ .Values.db.probes.startup.timeoutSeconds }}
+            failureThreshold: {{ .Values.db.probes.startup.failureThreshold }}
           readinessProbe:
             exec:
               command:
                 - sh
                 - -c
                 - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
-            initialDelaySeconds: 10
-            periodSeconds: 5
-            timeoutSeconds: 3
-            failureThreshold: 5
+            initialDelaySeconds: {{ .Values.db.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.db.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.db.probes.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.db.probes.readiness.failureThreshold }}
           livenessProbe:
             exec:
               command:
                 - sh
                 - -c
                 - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
-            initialDelaySeconds: 20
-            periodSeconds: 10
-            timeoutSeconds: 3
-            failureThreshold: 5
+            initialDelaySeconds: {{ .Values.db.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.db.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.db.probes.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.db.probes.liveness.failureThreshold }}
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data
