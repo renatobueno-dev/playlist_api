@@ -94,6 +94,6 @@ Phase coverage:
 
 ## 🔍 Troubleshooting
 
-| File                                                                                               | Description                                                                                             |
-| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| [troubleshooting/errors-session-register.md](./archive/troubleshooting/errors-session-register.md) | Session-scoped error register — observed CI, Terraform, and local tooling errors with root-cause groups |
+| File                                                                                                       | Description                                                                                             |
+| ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| [archive/troubleshooting/errors-session-register.md](./archive/troubleshooting/errors-session-register.md) | Session-scoped error register — observed CI, Terraform, and local tooling errors with root-cause groups |

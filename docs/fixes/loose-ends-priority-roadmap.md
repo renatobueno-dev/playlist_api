@@ -62,11 +62,10 @@ Implementation status per step is tracked below in the ordered remediation secti
 
 ### Production-polish
 
-1. DestinationRule resilience tuning.
-2. External secret manager adoption.
-3. Remote backend and locking expansion for Terraform.
-4. Stricter provider pin granularity.
-5. Additional namespace security posture expansion.
+1. External secret manager adoption.
+2. Remote backend and locking expansion for Terraform.
+3. Stricter provider pin granularity.
+4. Additional namespace security posture expansion.
 
 ## 📍 Ordered Remediation Steps
 
@@ -205,3 +204,8 @@ Optional production extras (not required for Stage 4 mission scope) remain separ
 - [Fixes index](./README.md)
 - [Namespace single source of truth](./namespace-single-source-of-truth.md)
 - [Security defaults hardening](./security-defaults-hardening.md)
+- [Runtime hardening baseline](./runtime-hardening-baseline.md)
+- [Pipeline reproducibility hardening](./pipeline-reproducibility-hardening.md)
+- [Terraform and Kubernetes posture hardening](./terraform-kubernetes-posture-hardening.md)
+- [Istio DestinationRule resilience baseline](./istio-destinationrule-resilience.md)
+- [Post-step follow-ups](./post-step-followups.md)

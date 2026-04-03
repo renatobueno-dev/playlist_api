@@ -117,7 +117,7 @@ Schema prerequisite:
 - For mesh-enabled environments, the target namespace baseline must already be compatible with Istio sidecar injection and leave enough quota headroom for workload containers plus sidecars.
 
 ```bash
-minikube image load music-platform-api:1.7.0
+minikube image load music-platform-api:<tag>
 helm upgrade --install music-platform helm/music-platform --namespace music-platform --create-namespace
 kubectl get all -n music-platform
 kubectl port-forward svc/music-platform-api 8000:8000 -n music-platform
@@ -127,7 +127,7 @@ Open:
 
 - `http://127.0.0.1:8000/docs`
 
-This example matches the current chart default in `values.yaml` (`api.image.tag: 1.7.0`). If your API image uses a different tag, update either:
+Replace `<tag>` with the value configured in `helm/music-platform/values.yaml` (`api.image.tag`) or with the override you plan to pass at install time. If your API image uses a different tag, update either:
 
 - `helm/music-platform/values.yaml` (`api.image.tag`), or
 - command line override:

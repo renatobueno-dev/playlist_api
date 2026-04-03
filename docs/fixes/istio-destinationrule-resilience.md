@@ -55,7 +55,7 @@ Commands:
 ```bash
 ./scripts/render-istio-manifests.sh >/tmp/istio-step6.yaml
 rg "kind: DestinationRule|playcatch-api-resilience|ISTIO_MUTUAL|outlierDetection|connectionPool" /tmp/istio-step6.yaml
-rg "__NAMESPACE__|__API_SERVICE_HOST__|__ISTIO_HOST__|__CLUSTER_DOMAIN__|__API_SERVICE_ACCOUNT__" /tmp/istio-step6.yaml
+rg "__NAMESPACE__|__API_SERVICE_HOST__|__ISTIO_HOST__|__ISTIO_TLS_SECRET__|__CLUSTER_DOMAIN__|__API_SERVICE_ACCOUNT__" /tmp/istio-step6.yaml
 ```
 
 Checks:

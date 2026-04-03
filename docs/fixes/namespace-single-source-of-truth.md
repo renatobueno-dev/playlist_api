@@ -32,6 +32,7 @@ Changes:
 - Replaced hardcoded namespace and identity values with placeholders:
   - `__NAMESPACE__`
   - `__ISTIO_HOST__`
+  - `__ISTIO_TLS_SECRET__`
   - `__API_SERVICE_HOST__`
   - `__CLUSTER_DOMAIN__`
   - `__API_SERVICE_ACCOUNT__`
@@ -80,7 +81,7 @@ Run locally:
 
 ```bash
 ./scripts/render-istio-manifests.sh >/tmp/istio-rendered.yaml
-rg "__NAMESPACE__|__ISTIO_HOST__|__API_SERVICE_HOST__|__CLUSTER_DOMAIN__|__API_SERVICE_ACCOUNT__" /tmp/istio-rendered.yaml
+rg "__NAMESPACE__|__ISTIO_HOST__|__ISTIO_TLS_SECRET__|__API_SERVICE_HOST__|__CLUSTER_DOMAIN__|__API_SERVICE_ACCOUNT__" /tmp/istio-rendered.yaml
 ```
 
 Expected:
