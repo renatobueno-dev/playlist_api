@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [1.8.0] — 2026-04-04
+
 ### Added
 
 - Repository-wide full-quality tooling foundation with Ruff, Prettier, markdownlint, yamllint, shfmt, ShellCheck, actionlint, hadolint, dotenv-linter, pre-commit hooks, and helper scripts for local quality workflows.
@@ -212,7 +216,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - Database startup retry loop — configurable via `STARTUP_DB_MAX_RETRIES` (default `20`) and `STARTUP_DB_RETRY_SECONDS` (default `2`)
 - Eager loading (`selectinload`) on all playlist queries to prevent N+1 patterns
 
-[Unreleased]: https://github.com/renatobueno-dev/music-platform/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/renatobueno-dev/music-platform/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/renatobueno-dev/music-platform/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/renatobueno-dev/music-platform/compare/v1.6.1...v1.7.0
 [1.6.1]: https://github.com/renatobueno-dev/music-platform/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/renatobueno-dev/music-platform/compare/v1.5.0...v1.6.0
