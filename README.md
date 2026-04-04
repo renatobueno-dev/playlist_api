@@ -231,6 +231,7 @@ Local prerequisites by layer:
 - `fast` and `python` assume the project `.venv` is installed with the repo dependencies.
 - `security` also needs Docker locally because the `lychee` wrapper runs through a container image.
 - `infra` also needs Docker, Helm, and Terraform available on your machine.
+- `runtime` also needs Docker because the layer builds and validates the container image.
 
 Python quality has explicit boundaries in this project:
 

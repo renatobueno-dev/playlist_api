@@ -82,7 +82,7 @@ Current behavior:
 - checks:
   - [`../README.md`](../README.md)
   - [`../CHANGELOG.md`](../CHANGELOG.md)
-  - [`./`](./)
+  - [`docs/`](./)
 - excludes:
   - `mailto:`
   - loopback/localhost URLs

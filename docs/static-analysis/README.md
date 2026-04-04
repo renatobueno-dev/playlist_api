@@ -44,4 +44,4 @@ Each step file follows the same durable structure:
 - The biggest complexity hotspots are concentrated in large contract tests rather than the runtime path.
 - Static analysis is now part of the CI quality stack through the dedicated `python-quality` job.
 - Step 6 remains useful as a historical decision record for the earlier local-only phase before CI enforcement was added.
-- `radon` now has a documented maintenance policy for remaining A/B-ranked blocks.
+- `radon` now has a documented maintenance policy. All tracked hotspots reached A-rank after the cleanup path; no B-ranked blocks remain.

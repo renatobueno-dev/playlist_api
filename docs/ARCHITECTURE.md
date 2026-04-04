@@ -10,7 +10,7 @@
 ```text
 Song ──────────────────────────────────────┐
                                            │  (via playlist_songs)
-Playlist ─────────────────────────────────┘
+Playlist ──────────────────────────────────┘
 ```
 
 The many-to-many association table `playlist_songs` carries `added_at` — recording when a song was linked. A pure join table without metadata would lose information for free.

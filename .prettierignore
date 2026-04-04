@@ -1,8 +1,13 @@
+# Virtual environments and caches
 .venv/
 .pytest_cache/
 .ruff_cache/
 .pre-commit-cache/
+
+# Local tools and audit artifacts
 .tools/
 .audit/
+
+# Infrastructure templates (Helm Go templates are not valid YAML/Markdown)
 .terraform/
 helm/music-platform/templates/

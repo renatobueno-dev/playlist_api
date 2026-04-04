@@ -112,7 +112,7 @@ The Helm chart includes `startupProbe`, `readinessProbe`, and `livenessProbe` on
 - `readinessProbe`: controls when the pod receives traffic.
 - `livenessProbe`: restarts the pod if the process hangs.
 
-The default of `failureThreshold: 30` with `periodSeconds: 2` gives ~60 seconds of warm-up — more than enough for Uvicorn startup plus database connection.
+The default of `failureThreshold: 30` with `periodSeconds: 2` gives ~65 seconds of warm-up — more than enough for Uvicorn startup plus database connection.
 
 The full chart guide is in [`docs/kubernetes/helm-guide.md`](./kubernetes/helm-guide.md).
 
@@ -220,7 +220,7 @@ The lesson: **redundancy in documentation has the same cost as redundancy in cod
 
 After the project was complete, a full cross-file audit caught inconsistencies that accumulated through incremental edits:
 
-- The AI workflow table had become inaccurate — two conversations listed instead of the actual five. Corrected and the working process described.
+- The AI workflow table had become inaccurate — two conversations listed instead of the actual five (later corrected to six in a subsequent audit round). Corrected and the working process described.
 - Stage 4 phase numbering was reversed in this log: Terraform labelled Phase 5, CI/CD Phase 4. Corrected to the chronological implementation order.
 - Test sections in `README.md` and `SETUP_AND_QUALITY.md` documented a planned structure with examples and a priority test table — forward-looking content with no implementation. Simplified to "Under development."
 - Alembic migration references updated from aspirational phrasing to "under development."
@@ -238,6 +238,101 @@ Real problems that surfaced and were fixed:
 - **`serviceaccounts.yaml` missing from helm-guide.md** — the template was created during the Istio security phase but the Helm guide was not updated. Caught in the redundancy audit; corrected.
 - **Documentation with inconsistent stage-based naming** — the original guides used `STAGE_X_` prefixes reflecting creation order. Reorganised to reflect topic instead.
 - **Four Terraform files repeating the same scope** — the step-by-step progression generated repetition. Redundancy identified and removed with explicit references to `min-scope.md` as the single source of truth.
+
+---
+
+## 🔬 Post-v1.7.0 — Quality, Security, and Audit Work
+
+After the four infrastructure stages were complete and v1.7.0 tagged, a fifth phase focused on quality tooling, static analysis, security, and audit follow-up.
+
+### Static analysis adoption
+
+The static analysis work started from zero: no pylint configuration, no radon baseline. Seven steps were used to reach a clean, stable baseline — documented in [`docs/static-analysis/`](./static-analysis/README.md):
+
+1. Add a `.pylintrc` baseline. Only repository-specific suppressions; no bulk silencing.
+2. Fix the real findings surfaced by the default baseline, rather than suppressing them.
+3. Add selective docstrings where the default `missing-module-docstring` and `missing-function-docstring` rules trigger on framework-entry-point code that doesn't benefit from them.
+4. Narrow suppressions to framework-pattern issues only — `pylint` should still run at full sensitivity on application logic.
+5. Reduce radon complexity hotspots. Test helpers were the main complexity sources; they were split into smaller focused functions.
+6. Record the CI enforcement decision explicitly: at this stage, pylint and radon stayed local, not in CI yet. This let the baseline stabilise without introducing a new CI gate prematurely.
+7. A maintenance policy was documented: the pylint/radon baseline is a floor, not a ceiling. Suppressions are reviewed when adding new code, not accumulated silently.
+
+End state: `pylint 10.00/10`, radon all-A across all rated modules.
+
+### Quality tooling foundation
+
+Before CI was refactored, a repository-wide quality tooling foundation was introduced: Ruff, Prettier, markdownlint, yamllint, shfmt, ShellCheck, actionlint, hadolint, dotenv-linter, a `.editorconfig`, and three helper scripts (`format-all.sh`, `run-quality-tool.sh`, `check-text-hygiene.py`). Pre-commit hooks were added to enforce the same tools locally.
+
+The tool design follows a one-tool-per-responsibility principle — each tool has a clear lane and does not overlap with others:
+
+- Ruff: Python formatting and fast lint.
+- Pylint: Python static analysis baseline.
+- Radon: Python complexity and maintainability.
+- Prettier: Markdown and YAML formatting.
+- markdownlint: Markdown structure.
+- yamllint: YAML structure (distinct from formatting).
+- shfmt + ShellCheck: shell formatting and correctness.
+- actionlint: workflow YAML semantic validation.
+- hadolint: Dockerfile best practices.
+- dotenv-linter: `.env.example` structure.
+
+The full tool stack is described in [`docs/QUALITY.md`](./QUALITY.md).
+
+### Security toolchain rollout
+
+Security was introduced in a staged sequence — four tools first, with a fifth deliberately deferred:
+
+1. **gitleaks**: git-history secret scan. CI runs in `git` mode (full history); local runs scan the current tree.
+2. **pip-audit**: checks all pinned dependencies against known vulnerability databases.
+3. **lychee**: link checker for documentation, with repo-specific exclusions for localhost and runtime-only URLs.
+4. **bandit**: Python security analysis, tuned to application and migration code only — test and helper noise is excluded.
+5. **trivy**: container image CVE scanner. Staged for the next phase after initial security gate stability.
+
+The staged approach was deliberate: introducing gitleaks + pip-audit + lychee + bandit together tested the gate under real conditions before adding trivy's larger scan surface.
+
+The security toolchain is described in [`docs/SECURITY_TOOLCHAIN.md`](./SECURITY_TOOLCHAIN.md).
+
+### CI refactoring — four readable jobs
+
+The original CI had one large `validate` job. That job was split into four separate jobs, each with a defined responsibility:
+
+- `fast-quality`: formatting and lint feedback across all file types. Runs first; fails fast on formatting issues.
+- `python-quality`: pylint and radon, isolated in their own job so Python quality feedback is never mixed into formatting noise.
+- `security-validation`: gitleaks, pip-audit, lychee, bandit — run independently so a security finding doesn't require reading through formatter output.
+- `runtime-validation`: contract tests, Docker build, Helm validation, Terraform validation.
+
+All four jobs run in parallel before `deploy`. The separation also makes CI output easier to read: the failure line tells you which category failed.
+
+All jobs were pinned to `ubuntu-24.04` — the same class of decision as pinning CLI versions. Reproducibility requires explicit versions, not moving targets.
+
+### Test suite refactoring
+
+The contract test suite was at ~14 tests at v1.7.0. Radon identified several test helper functions as complexity hotspots — these were functions that combined setup, multiple assertions, and teardown in one body. Each was split into focused, independent test cases.
+
+End state: 46 tests covering all CRUD paths, all 404 paths, all 422 validation paths, relationship endpoints, cascade and empty-list behaviors, and DELETE response standardization.
+
+A related code fix: `DELETE /playlists/{id}/songs/{song_id}` was returning `None` implicitly while `DELETE /songs/{id}` and `DELETE /playlists/{id}` were returning `Response(status_code=204)` explicitly. Standardized all three to the explicit return.
+
+### Supply-chain hardening
+
+Three supply-chain hardening steps were applied:
+
+- **Dockerfile base image SHA-pinned**: `python:3.12-slim@sha256:3d5ed973...`. Tags are mutable — a registry push can silently replace a tag with new layers. The digest is immutable.
+- **Helm DB image SHA-pinned**: `postgres:16-alpine@sha256:20edbde7...`. Same rationale; the tag is kept for readability only.
+- **Docker Compose DB image SHA-pinned**: same digest as the Helm chart, so the two environments use exactly the same PostgreSQL image.
+
+### External audit and finding resolution
+
+An external documentation and code audit produced 10 findings. All were resolved:
+
+- Startup warm-up time corrected: "~60 seconds" was the wrong arithmetic (it omitted `initialDelaySeconds: 5`). Corrected to "~65 seconds" in this log and in `DEVELOPMENT_DIARY.md`.
+- Placeholder list in `docs/fixes/namespace-single-source-of-truth.md` was missing `__ISTIO_TLS_SECRET__`. Added.
+- Validation grep commands in two `docs/fixes/` files were missing `__ISTIO_TLS_SECRET__` from the unresolved-placeholder check. Fixed in both.
+- `terraform state mv` was the wrong command in `DEVELOPMENT_DIARY.md` — the correct operation is `terraform state rm` when removing a resource from Terraform management. Corrected.
+- `docs/fixes/loose-ends-priority-roadmap.md` listed DestinationRule tuning as a pending production-polish item even though Step 6 in the same file recorded it as implemented. Corrected.
+- The Related Documents section in the roadmap was missing links to Steps 3–6 and the post-step follow-up file. Added.
+- `helm-guide.md` had a hardcoded version tag in the `minikube image load` example command. Replaced with a `<tag>` placeholder with a note to use `values.yaml`.
+- `docs/README.md` display text for the troubleshooting link masked the `archive/` path depth. Corrected.
 
 ---
 

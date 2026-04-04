@@ -13,7 +13,7 @@ Goal:
 Compose must include:
 
 - `api` service (FastAPI container).
-- `db` service (PostgreSQL container).
+- `db` service (PostgreSQL container) — the image is SHA-pinned (`postgres:16-alpine@sha256:20edbde7...`) for the same supply-chain reason as the API base image: tag pinning alone is not immutable.
 - explicit `DATABASE_URL` pointing from `api` to `db` service name.
 - Service dependency/health strategy (`depends_on` + DB healthcheck).
 

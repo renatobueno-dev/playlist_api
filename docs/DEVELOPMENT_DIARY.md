@@ -21,15 +21,16 @@ The deliberate focus of this checkpoint was **deployment architecture** — unde
 
 ### AI workflow
 
-Five conversations with distinct responsibilities:
+Six conversations with distinct responsibilities:
 
-| Conversation | Model             | Role                                        |
-| ------------ | ----------------- | ------------------------------------------- |
-| 1            | GPT-5.4           | API challenge guidance                      |
-| 2            | GPT-5.3-Codex     | Coding                                      |
-| 3            | GPT-5.4           | Code explanation and study                  |
-| 4            | Claude Sonnet 4.6 | Review, design decisions, and documentation |
-| 5            | Claude Opus 4.6   | Audit — looking for loose ends              |
+| Conversation | Model             | Role                                                                                        |
+| ------------ | ----------------- | ------------------------------------------------------------------------------------------- |
+| 1            | GPT-5.4           | API challenge guidance                                                                      |
+| 2            | GPT-5.3-Codex     | Coding                                                                                      |
+| 3            | GPT-5.4           | Code explanation and study                                                                  |
+| 4            | Claude Sonnet 4.6 | Review, design decisions, and documentation                                                 |
+| 5            | Claude Opus 4.6   | Audit — loose ends, structural audit, finding verification                                  |
+| 6            | Claude Opus 4.6   | Quality/security rollout guidance, doc gap analysis, finding resolution, documentation sync |
 
 **How I worked:** Read all guidance first, then asked Codex to execute each step. Even after understanding what was done, I sent the output to a separate GPT conversation for explanation. Followed that logic end to end through the full challenge. When the challenge was complete, switched to Sonnet for documentation only and Opus for auditing only. Any new guidance or coding goes back to the GPT workflow to keep consistency and sources of truth.
 
@@ -145,7 +146,7 @@ The Helm chart uses `startupProbe`, `readinessProbe`, and `livenessProbe` with d
 - `readinessProbe`: controls when the pod receives traffic — decoupled from whether it is alive.
 - `livenessProbe`: restarts a hung process.
 
-The default `failureThreshold: 30` with `periodSeconds: 2` gives ~60 seconds of warm-up — enough for Uvicorn startup plus database connection in a slow environment.
+The default `failureThreshold: 30` with `periodSeconds: 2` gives ~65 seconds of warm-up — enough for Uvicorn startup plus database connection in a slow environment.
 
 ---
 
@@ -189,7 +190,7 @@ The minimum scope was chosen not because it is the most interesting thing Terraf
 - It is a direct prerequisite for Helm deploy and Istio behaviour.
 - It has no overlap with any Helm-managed object.
 
-Expanding from a safe minimum is straightforward. Contracting from an overly broad Terraform scope that conflicts with Helm requires `terraform state mv` and migration coordination.
+Expanding from a safe minimum is straightforward. Contracting from an overly broad Terraform scope that conflicts with Helm requires `terraform state rm` and migration coordination.
 
 ### Four documentation layers for a single decision
 
@@ -251,7 +252,7 @@ These four files were later consolidated into two: `scope-and-boundary.md` and `
 
 After the project was complete, a full cross-file audit caught five inconsistencies that had accumulated through incremental edits:
 
-- The AI workflow table listed two conversations instead of five. Corrected.
+- The AI workflow table listed two conversations instead of five (later corrected to six in a subsequent audit round). Corrected.
 - Stage 4 phase numbering was reversed in `DEVELOPMENT_LOG.md` (Terraform labelled Phase 5, CI/CD Phase 4 — reversed from the actual implementation order). Corrected.
 - Test sections in `README.md` and `SETUP_AND_QUALITY.md` (since split into `SETUP.md` and `QUALITY.md`) described planned content with no implementation. Simplified to "Under development."
 - Alembic migration references updated from aspirational phrasing to "under development."
@@ -269,6 +270,54 @@ Problems that surfaced during the process and required explicit fixes:
 - **Stage-based doc naming** — the `STAGE_X_` prefix system made reference navigation harder once the project was complete. Reorganised to topic-based structure.
 - **Duplicate Terraform scope content** — four files created incrementally produced three sections repeating the same scope boundary. Consolidated with references to `min-scope.md` as the single source of truth. Later merged from four files into two (`scope-and-boundary.md` and `flow-integration.md`).
 - **Documentation with forward-looking content** — test coverage and migration tracking sections described intended future state as if already implemented. Simplified to "under development."
+
+---
+
+## 🔬 Quality and analysis layer decisions
+
+### Why Ruff does not replace Pylint or Radon
+
+Ruff, Pylint, and Radon each have a distinct role — this is not redundancy:
+
+- **Ruff** is a fast formatter and lint layer. It catches style issues, import ordering, and many common code smells in milliseconds. It runs in the `fast-quality` CI job, before anything else.
+- **Pylint** is the static analysis baseline. It runs deeper analysis — unused arguments, unreachable code, interface misuse, and framework-specific patterns — and reports at a score level, not just pass/fail.
+- **Radon** measures complexity and maintainability independently. A file can pass Pylint at 10.00/10 and still have a function with cyclomatic complexity C or maintainability index B. Radon surfaces that separately.
+
+The boundary is: if Ruff can catch it cheaply, Ruff catches it. If it requires deeper analysis, Pylint or Radon catches it. No overlap, no gaps.
+
+### Why security tools were staged
+
+Four tools were introduced together (`gitleaks`, `pip-audit`, `lychee`, `bandit`); a fifth (`trivy`) was deliberately deferred.
+
+The reason is gate stability. Introducing multiple security tools at once means any initial false positive or configuration gap has to be triaged across all of them simultaneously. Starting with four tools that have clear tuning dials (bandit's confidence/severity thresholds, lychee's exclusion list, pip-audit's known-safe list) let the gate reach a stable state before adding trivy's container CVE scanner, which requires a separate image-pull infrastructure in CI.
+
+The full staging rationale is in [`docs/SECURITY_TOOLCHAIN.md`](./SECURITY_TOOLCHAIN.md).
+
+### Why contract tests were split into smaller focused cases
+
+Radon flagged several test helper functions as the main complexity hotspots. These were functions that combined fixture setup, multiple endpoint calls, and several assertions into one body — the kind of helper that starts as a convenience and grows over time.
+
+Splitting them into focused, independent test cases brought complexity down while making each test more readable: a failing test now names exactly what contract was violated, rather than producing a long traceback from inside a shared helper.
+
+End state: 46 focused test cases from the original ~14.
+
+### Why CI was split into four jobs
+
+The original single `validate` job produced a monolithic output blob that mixed Python formatting errors, security findings, container validation failures, and test results. A formatting failure required reading through the entire job log to find it.
+
+Four jobs with explicit responsibilities — `fast-quality`, `python-quality`, `security-validation`, `runtime-validation` — give precise failure signals. The job name tells you the category before you open the output. They also run in parallel, so the end-to-end CI time does not increase with the job count.
+
+### Why SHA-pinning was applied
+
+Container image tags are mutable. A `docker pull python:3.12-slim` at different times can return different image layers if the maintainer has pushed an update. In a CI/CD pipeline, this means a build that passed yesterday can fail today without any code change, and the error points to the application code rather than the registry.
+
+Digest pinning (`@sha256:...`) makes the image reference immutable — the build always uses exactly the same layers. The tag is kept alongside the digest for human readability only; the digest is the actual constraint. Three images were pinned: API base image (Dockerfile), DB image (Helm values.yaml), and DB image (docker-compose.yml). Keeping the same digest in both Helm and Compose ensures the PostgreSQL version is identical across local and cluster environments.
+
+### Why DELETE handlers were standardized to explicit `Response(status_code=204)`
+
+`DELETE /playlists/{id}/songs/{song_id}` was returning `None` implicitly — FastAPI infers a 204 response when the return type is `None` and the route is decorated with `status_code=204`. The other two delete routes returned `Response(status_code=204)` explicitly.
+
+Both forms work. But the implicit form hides the intent: a reader must know how FastAPI handles `-> None` on a 204 route to confirm the behavior. The explicit form makes the contract visible without needing to know the framework convention. Consistency across the three routes removes one class of reader confusion.
 
 ---
 

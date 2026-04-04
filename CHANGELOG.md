@@ -13,23 +13,31 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 - Repository-wide full-quality tooling foundation with Ruff, Prettier, markdownlint, yamllint, shfmt, ShellCheck, actionlint, hadolint, dotenv-linter, pre-commit hooks, and helper scripts for local quality workflows.
 - Dedicated quality/security implementation guides documenting the layered validation model and the staged security-toolchain rollout.
+- `docs/STATIC_ANALYSIS.md` guide covering the full pylint/radon workflow, suppression policy, and maintenance baseline.
+- `docs/static-analysis/` directory with 7 step-by-step files documenting the complete static-analysis adoption path (baseline → findings → docstrings → suppressions → CI enforcement decision → maintenance).
 
 ### Changed
 
 - Python quality now targets the default `pylint` and default `radon` baseline directly, with codebase cleanup aligned to those reports.
 - GitHub Actions validation is now split into `fast-quality`, `python-quality`, `security-validation`, and `runtime-validation` before deploy.
+- All CI jobs pinned to `ubuntu-24.04` runner for reproducible workflow execution.
 - Repository docs were synchronized with the current quality model, CI layers, and static-analysis history, including the historical transition from local-only static analysis to CI enforcement.
 - Docker Compose now consumes explicit database URLs instead of assembling them from raw `POSTGRES_*` variables, and the setup docs now distinguish container-facing and host-facing connection strings.
 - The Helm chart now defaults to two API replicas, with docs updated to describe the local override path for lightweight clusters.
+- Contract test suite expanded from ~14 to 46 focused cases through radon hotspot reduction, splitting complex test helpers into independent parameterized cases.
 
 ### Fixed
 
 - Post-split fast-quality regressions in shell tooling and documentation formatting were cleaned up so `./scripts/check-quality.sh all` passes end to end again.
 - API docs now explicitly describe the current unauthenticated project scope and the deduplication behavior for repeated `song_ids` in playlist create/update flows.
+- Song and playlist DELETE handlers standardized to explicit `Response(status_code=204)` for consistent return style across all delete routes.
 
 ### Security
 
 - Added enforced repository security validation with `gitleaks`, `pip-audit`, `lychee`, and tuned `bandit`, while documenting `trivy` as the next staged hardening phase.
+- Dockerfile base image SHA-pinned (`python:3.12-slim@sha256:3d5ed973e45820f5ba5e46bd065bd88b3a504ff0724d85980dcd05eab361fcf4`) for supply-chain reproducibility.
+- Helm DB image SHA-pinned (`postgres:16-alpine@sha256:20edbde7749f822887a1a022ad526fde0a47d6b2be9a8364433605cf65099416`) for consistent base image across chart deployments.
+- Docker Compose DB image SHA-pinned using the same digest as the Helm chart.
 
 ## [1.7.0] — 2026-03-31
 

@@ -45,11 +45,11 @@ helm/music-platform/
 
 - `nameOverride` and `fullnameOverride` for resource naming overrides when the default Helm naming convention is not desired.
 - API image repo/tag/pull policy.
-- API replica count, service type/port, container port, and resource requests/limits. The chart now defaults to `api.replicaCount: 2`; override it to `1` only for lightweight local clusters that do not need the extra replica.
+- API replica count, service type/port, container port, and resource requests/limits (`requests: 100m CPU / 128Mi`, `limits: 500m CPU / 512Mi`). The chart now defaults to `api.replicaCount: 2`; override it to `1` only for lightweight local clusters that do not need the extra replica.
 - API health probes (`startup`, `readiness`, `liveness`) for startup and runtime stability.
 - DB image repo/tag/pull policy.
 - DB name/user/password and `db.existingSecret` for externally managed runtime credentials.
-- DB service port, probe tuning (`db.probes.*`), persistence toggle, storage size, optional storage class, and resource requests/limits.
+- DB service port, probe tuning (`db.probes.*`), persistence (`enabled: true`, `size: 1Gi`, `storageClass: "standard"`), and resource requests/limits (`requests: 100m CPU / 256Mi`, `limits: 1 CPU / 1Gi`).
 
 ## ⏱️ Probe tuning for smoother startup
 
@@ -79,7 +79,7 @@ The PostgreSQL StatefulSet also exposes configurable probe timing under `db.prob
 - `readinessProbe`: controls when the DB is considered ready to accept traffic.
 - `livenessProbe`: restarts the DB container if it becomes unresponsive.
 
-Default DB startup values in `values.yaml`:
+Default DB probe values in `values.yaml`:
 
 ```yaml
 db:
@@ -89,6 +89,16 @@ db:
       periodSeconds: 5
       timeoutSeconds: 3
       failureThreshold: 12
+    readiness:
+      initialDelaySeconds: 10
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 5
+    liveness:
+      initialDelaySeconds: 20
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 5
 ```
 
 ## ✅ Validate chart locally

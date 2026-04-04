@@ -152,6 +152,7 @@ Deploy responsibilities:
    - namespace and resources allowed by cluster RBAC
 6. Tooling stability
    - the workflow pins `kubectl`, Helm, Terraform, and `actions/setup-node`
+   - all jobs use `ubuntu-24.04` (explicit runner version, not `ubuntu-latest`) for the same reproducibility reason as pinned CLI versions — a silent runner upgrade cannot break the pipeline
 
 ## 🔐 Runtime secret ownership note
 

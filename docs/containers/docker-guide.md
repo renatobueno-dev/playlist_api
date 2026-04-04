@@ -35,6 +35,8 @@ Goal:
 
 - Build an API image that can run independently.
 
+> **Supply-chain note:** The base image is SHA-pinned (`python:3.12-slim@sha256:3d5ed973...`) rather than using the tag alone. Tags are mutable — a registry push can silently replace `python:3.12-slim` with a different layer. Pinning the digest guarantees every build uses the exact same image, regardless of what the tag resolves to at build time. The SHA in the Dockerfile is the single source of truth; the tag is kept for human readability only.
+
 Commands:
 
 > `DATABASE_URL` is always required. Startup now validates schema and does not create tables automatically, so migrations must be applied before starting API runtime.

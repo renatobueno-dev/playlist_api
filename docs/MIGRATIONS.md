@@ -70,7 +70,7 @@ DATABASE_URL=<your-db-url> ./.venv/bin/alembic upgrade head
 2. create migration when schema-relevant model changes occur
 3. review generated revision
 4. apply migration
-5. run tests
+5. run tests (validates model contracts — does not exercise the migration itself; see note below)
 
 ```bash
 export DATABASE_URL=sqlite:///./music.db
@@ -78,6 +78,8 @@ export DATABASE_URL=sqlite:///./music.db
 ./.venv/bin/alembic upgrade head
 ./.venv/bin/python -m pytest -q tests
 ```
+
+> **Scope note:** The test suite validates ORM model contracts using `Base.metadata.create_all()`, not Alembic migrations. A passing test run confirms that the application models work correctly, but does not prove that a specific migration revision produces the expected schema. To verify a migration in isolation, use `alembic upgrade head` on a clean database and inspect the result manually.
 
 ---
 
