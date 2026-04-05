@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `docs/RELEASE_PLAN.md` to capture the current release map (`v1.8.1`, `v1.9.0`, `v2.0.0`) and the precise CI checklist for decoupling GHCR publication from cluster deployment.
+
 ---
 
 ## [1.8.0] — 2026-04-04

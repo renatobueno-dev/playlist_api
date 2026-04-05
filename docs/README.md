@@ -15,6 +15,7 @@
 | [LIFECYCLE_VALIDATION.md](./LIFECYCLE_VALIDATION.md)                   | Final lifecycle validation summary across local, tests, Docker, Kubernetes, and Istio ingress  |
 | [QUALITY.md](./QUALITY.md)                                             | Repository quality stack, tool boundaries, local commands, and CI quality layers               |
 | [QUALITY_IMPLEMENTATION.md](./QUALITY_IMPLEMENTATION.md)               | Implementation record of the full-quality tooling setup and verification work                  |
+| [RELEASE_PLAN.md](./RELEASE_PLAN.md)                                   | Living version map and release-planning checklist for upcoming release work                    |
 | [API.md](./API.md)                                                     | Stable API endpoint reference with schemas and status codes                                    |
 | [DEVELOPMENT_LOG.md](./DEVELOPMENT_LOG.md)                             | Development journey — reasoning, decisions, and corrections per stage                          |
 | [DEVELOPMENT_DIARY.md](./DEVELOPMENT_DIARY.md)                         | Component-level decisions and reasoning — the why behind each technical choice                 |
