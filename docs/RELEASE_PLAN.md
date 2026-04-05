@@ -4,12 +4,12 @@
 
 ## 📌 Current release map
 
-| Version  | Theme                           | Status                    |
-| -------- | ------------------------------- | ------------------------- |
-| `v1.8.0` | Quality/security/CI foundation  | Tagged and pushed         |
-| `v1.8.1` | Fix GHCR publish coupling       | Next patch                |
-| `v1.9.0` | Trivy / container hardening     | Next minor                |
-| `v2.0.0` | Auth + operational maturity     | Longer-horizon major step |
+| Version  | Theme                          | Status                    |
+| -------- | ------------------------------ | ------------------------- |
+| `v1.8.0` | Quality/security/CI foundation | Tagged and pushed         |
+| `v1.8.1` | Fix GHCR publish coupling      | Next patch                |
+| `v1.9.0` | Trivy / container hardening    | Next minor                |
+| `v2.0.0` | Auth + operational maturity    | Longer-horizon major step |
 
 ## 🩹 `v1.8.1` scope
 
